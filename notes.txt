@@ -1,0 +1,10 @@
+[[THE WAY OF THE EMOJI!!!]]
+
+To get the formatted version of  <:emoji_name:emoji_id> automatically
+open Discord and type in  \:YourEmoji: (Be sure to replace "YourEmoji with the name of your emoji!)
+and Discord will automatically return a formatted version of <:emoji_name:emoji_id>
+
+
+----------------------------
+https://www.npmjs.com/package/random-js
+backup random package in case random.org API reaches quota/breaks

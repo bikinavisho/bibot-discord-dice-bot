@@ -5,6 +5,8 @@ const fsPromises = require('fs').promises;
 const LOG_DIRECTORY_PATH = './logs/'
 const LOG_FILE_SUFFIX = '__log.txt'
 
+fsPromises.mkdir(LOG_DIRECTORY_PATH).catch(() => {});
+
 function log(...message) {
   const LOG_DATE = formatDate(new Date(Date.now()))
 

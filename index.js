@@ -1,8 +1,11 @@
 const Discord = require("discord.js");
-const config = require("./config.json");
 const RandomOrg = require('random-org');
 const _ = require('lodash');
 const {log, cleanupLogDirectory} = require('./logging-util.js');
+
+// enable the use of environemnt files (.env)
+const dotenv = require('dotenv');
+dotenv.config();
 
 const random = new RandomOrg({ apiKey: process.env.RANDOM_API_KEY });
 const client = new Discord.Client();

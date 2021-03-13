@@ -4,7 +4,7 @@ const RandomOrg = require('random-org');
 const _ = require('lodash');
 const {log, cleanupLogDirectory} = require('./logging-util.js');
 
-const random = new RandomOrg({ apiKey: config.RANDOM_API_KEY });
+const random = new RandomOrg({ apiKey: process.env.RANDOM_API_KEY });
 const client = new Discord.Client();
 
 const prefix = "/";
@@ -425,4 +425,4 @@ client.on("message", function(message) {
 
 
 
-client.login(config.BOT_TOKEN);
+client.login(process.env.BOT_TOKEN);

@@ -2,6 +2,7 @@ const Discord = require("discord.js");
 const RandomOrg = require('random-org');
 const _ = require('lodash');
 const {log, cleanupLogDirectory} = require('./logging-util.js');
+const {getCriteria, parseSuccessesString, parseCritSuccessString, parseCritFailureString, skillCheck, SKILL_CHECK_RESULTS} = require('./trinity-functions.js');
 
 // enable the use of environemnt files (.env)
 require('dotenv').config();
@@ -44,10 +45,14 @@ client.on("message", function(message) {
             '\`/motw [n]\` - will roll 2d6+[n], with a partial success on 7+ and critical success on 10+ (note: n is optional)\n'+
             '\`/fate [n]\` - will roll 4 fate dice and add [n] to the result (note: n is optional)\n' +
             '\`/fate [n] = [y]\` - will roll 4 fate dice and add [n] to the result, then compare the total to given [y]\n' +
-            '\`/roll R[rank] [modifiers, comma delineated]\` - will roll the number of dice corresponding to the rank given. If using the comma delineated modifiers, ensure that the number of modifiers given equals the number of ranks/dice being rolled.\n\n'+
-            'example: \`/roll R1 10\` - This will roll 1d100 for a R1 skill/ability, with a modifier of 10.\n'+
-            'example: \`/roll R2 40,21\` - This will roll 2d100 for a R2 skill/ability, with a modifier of 40 for the first roll, and 21 for the second roll.\n'+
-            'example: \`/roll R3 30\` - This will roll 3d100 for a R3 skill/ability, with a modifier of 30 for the first, second, and third rolls.')
+            '\`/roll R[rank] [modifiers, comma delineated]\` - will roll the number of dice corresponding to the rank given. If using the comma delineated modifiers, ensure that the number of modifiers given equals the number of ranks/dice being rolled.\n'+
+            '\`/craft [n]R[rank] [modifiers, comma dileneated]\` - will roll the given skill check [n] times')
+            .setFooter('EXAMPLES: \n'+
+            '\t[/roll R1 10] - This will roll 1d100 for a R1 skill/ability, with a modifier of 10.\n'+
+            '\t[/roll R2 40,21] - This will roll 2d100 for a R2 skill/ability, with a modifier of 40 for the first roll, and 21 for the second roll.\n'+
+            '\t[/roll R3 30] - This will roll 3d100 for a R3 skill/ability, with a modifier of 30 for the first, second, and third rolls.\n'+
+            '\t[/craft 5R2 20] - This will roll 2d100 for a R2 crafting skill, with a modifier of 20 for both rolls, 5 times.')
+            .setColor('LUMINOUS_VIVID_PINK')
         message.channel.send(embed);
         break;
       case 'ping':
@@ -83,36 +88,7 @@ client.on("message", function(message) {
             return;
           }
 
-          // This represents the modifiers that are being used
-          let criteriaStrings;
-          try {
-            criteriaStrings = args[1].split(',');  // array of strings
-          } catch (exception) {
-            log('[[Exception thrown in parsing of argument into criteriaStrings]] ', exception)
-            log('not enough arguments passed in')
-            return;
-          }
-          //ENSURE THAT CRITERIA PASSED ARE NUMBERS!!
-          let wasErrorThrown = false;
-          let criteria = criteriaStrings.map((num) => {
-            if (isNaN(Number(num))) {
-              log('criteria passed is not a number');
-              wasErrorThrown = true;
-            }
-            return Number(num);
-          });
-          if (wasErrorThrown) {
-            return;
-          }
-
-          // if only one modifier is passed, and the rank is higher than one,
-          // duplicate the modifier until rank requirement is filled
-          if (criteria.length === 1 && rank > 1) {
-            let i;
-            for (i = 1; i < rank; i++) {
-              criteria.push(criteria[0]);
-            }
-          }
+          let criteria = getCriteria(args[1], rank);
           log(`Criteria parsed as: ${criteria}`);
 
           let randomConfig = {
@@ -125,17 +101,21 @@ client.on("message", function(message) {
             let criticalFailures = 0;   // greater than 90, including 90
             returnedNumbers.forEach((num, i) => {
               log(`comparing ${num} with ${criteria[i]}`)
-              // Add 50 to the first roll
-              if (i === 0) {
-                if (num <= 50 + criteria[i]) {
+              // Add 50 to the first roll and evaluate result of comparison
+              switch(skillCheck(num, criteria[i] + (i === 0 ? 50 : 0))) {
+                case SKILL_CHECK_RESULTS.CRITICAL_FAILURE:
+                  log('\tcrit failure')
+                  criticalFailures++;
+                  break;
+                case SKILL_CHECK_RESULTS.CRITICAL_SUCCESS:
+                  log('\tcrit success')
+                  criticalSuccesses++;
+                case SKILL_CHECK_RESULTS.SUCCESS:
+                  log('\tsuccess')
                   successes++;
-                  log(`success! ${num} is less than ${50+criteria[i]}`)
-                }
-              } else {
-                if (num <= criteria[i]) {
-                  successes++;
-                  log(`success! ${num} is less than ${criteria[i]}`)
-                }
+                  break;
+                default:
+                  log('\tfailure')
               }
               // Handle super extraneous cases
               if (num === 1) {
@@ -180,24 +160,13 @@ client.on("message", function(message) {
                     log('failed to add reaction to critical failure message. See error: ', error)
                   })
               }
-              // Handle normal extraneous cases
-              if (num <= 10) {
-                criticalSuccesses++;
-              }
-              if (num >= 90) {
-                criticalFailures++;
-              }
             });
 
             // Construct the result string
             let resultString = '';
-            resultString += `${successes} Success${successes === 1 ? '' : 'es'}. `;
-            if (criticalSuccesses > 0) {
-              resultString += `${criticalSuccesses} Critical Success${criticalSuccesses === 1 ? '' : 'es'}! `;
-            }
-            if (criticalFailures > 0) {
-              resultString += `${criticalFailures} Critical Failure${criticalFailures === 1 ? '' : 's'}! `;
-            }
+            resultString += parseSuccessesString(successes);
+            resultString += parseCritSuccessString(criticalSuccesses);
+            resultString += parseCritFailureString(criticalFailures);
             // Send final message to channel
             message.channel.send(`${userAlias} rolled... \`[${String(returnedNumbers).replace(/,/g, ', ')}]\` Result: ${resultString}`)
               .then((resultMessage) => {
@@ -239,6 +208,96 @@ client.on("message", function(message) {
           }).catch((error) => {
             log('ERROR: RANDOM ORG API HAS FAILED US. SEE ERROR: ', error)
           });
+        }
+        break;
+      case 'craft':
+        if (/^\d{1,2}r\d/.test(args[0].toLowerCase())) {
+          let numberOfCraftingRolls, rank;
+          if (/^\d{1}r\d/.test(args[0].toLowerCase())) {
+            numberOfCraftingRolls = args[0].substring(0, 1);
+            rank = args[0].slice(2);
+          } else if (/^\d{2}r\d/.test(args[0].toLowerCase())) {
+            numberOfCraftingRolls = args[0].substring(0, 2);
+            rank = args[0].slice(3);
+          } else {
+            log('number of crafting rolls did not match regex');
+            break;
+          }
+          numberOfCraftingRolls = Number(numberOfCraftingRolls);
+          rank = Number(rank);
+          if (isNaN(numberOfCraftingRolls) || isNaN(rank)) {
+            log('numberOfCraftingRolls or rank was not a number');
+            break;
+          }
+          log(`Rank: ${rank},  Number of Crafting Rolls: ${numberOfCraftingRolls}`);
+
+          let criteria = getCriteria(args[1], rank);
+          log(`Criteria parsed as: ${criteria}`);
+
+          let randomConfig = {
+            min: 1, max: 100, n: rank * numberOfCraftingRolls
+          };
+          random.generateIntegers(randomConfig).then((result) => {
+            let returnedNumbers = result.random.data;
+
+
+            // Make an array of arrays to reflect that we are rolling for a set,
+            // a multitude of times
+            let numberResults = [];
+            while (!_.isEmpty(returnedNumbers)) {
+              numberResults.push(returnedNumbers.splice(-rank));
+            }
+            numberResults = numberResults.reverse();
+            if (numberResults.length != numberOfCraftingRolls) {
+              log(`something went wrong. there are only ${numberResults.length} sets of results, not ${numberOfCraftingRolls}`);
+            }
+
+            let outputString = '';
+            numberResults.forEach((resultArray, n) => {
+              let successes = 0;
+              let criticalSuccesses = 0;  // less than 10 including 10
+              let criticalFailures = 0;   // greater than 90, including 90
+
+              outputString += `${n+1}: \`[${String(resultArray).replace(/,/g, ', ')}]\` - `;
+
+              // Compare the rolled numbers with the criteria given
+              resultArray.forEach((rolledNumber, i) => {
+                log(`comparing ${rolledNumber} with ${criteria[i]}${i === 0 ? '+50' : ''}`)
+
+                switch(skillCheck(rolledNumber, criteria[i] + (i === 0 ? 50 : 0))) {
+                  case SKILL_CHECK_RESULTS.CRITICAL_FAILURE:
+                    log('\tcrit failure')
+                    criticalFailures++;
+                    break;
+                  case SKILL_CHECK_RESULTS.CRITICAL_SUCCESS:
+                    log('\tcrit success')
+                    criticalSuccesses++;
+                  case SKILL_CHECK_RESULTS.SUCCESS:
+                    log('\tsuccess')
+                    successes++;
+                    break;
+                  default:
+                    log('\tfailure')
+                }
+              });
+
+              outputString += parseSuccessesString(successes);
+              outputString += parseCritSuccessString(criticalSuccesses);
+              outputString += parseCritFailureString(criticalFailures);
+              outputString += '\n'
+            });
+
+            // Send final message to channel
+            const embeddedMessage = new Discord.MessageEmbed()
+              .setTitle(`${userAlias}'s Crafting Rolls`)
+              .setDescription(outputString)
+              .setColor('GREEN')
+            message.channel.send(embeddedMessage);
+          }).catch((error) => {
+            log('ERROR: RANDOM ORG API HAS FAILED US. SEE ERROR: ', error)
+          });
+
+
         }
         break;
       case 'gurps':

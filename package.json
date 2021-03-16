@@ -1,14 +1,14 @@
 {
   "name": "discord-dice-bot",
   "version": "1.0.0",
-  "description": "",
+  "description": "A discord dice rolling bot!",
   "engines": {
     "node": "^12.16.2",
     "npm": "^6.14.4"
   },
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node ./src/index.js"
   },
   "author": "Bianca",
   "license": "ISC",

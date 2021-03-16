@@ -8,3 +8,8 @@ and Discord will automatically return a formatted version of <:emoji_name:emoji_
 ----------------------------
 https://www.npmjs.com/package/random-js
 backup random package in case random.org API reaches quota/breaks
+
+
+-----------------------------------------------------
+print the logs
+`heroku logs -a bibot-discord-bot`

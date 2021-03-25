@@ -10,7 +10,7 @@ require('dotenv').config();
 const random = new RandomOrg({ apiKey: process.env.RANDOM_API_KEY });
 const client = new Discord.Client();
 
-const prefix = "/";
+const prefix = "\\";
 
 client.on("ready", () => {
   console.log("I am ready!");
@@ -39,19 +39,19 @@ client.on("message", function(message) {
         const embed = new Discord.MessageEmbed()
           .setTitle('Bibot\'s Commands')
           .setDescription('Commands available:\n '+
-            '\`/roll [n]d[N]\` - will roll the specified number of di, with N sides, prints sum\n'+
-            '\`/gurps [n]\` - will roll 3d6 and check the result against the number you specify\n'+
-            '\`/pbta [n]\` - will roll 2d6+[n], with a partial success on 7+ and critical success on 10+ (note: n is optional)\n'+
-            '\`/motw [n]\` - will roll 2d6+[n], with a partial success on 7+ and critical success on 10+ (note: n is optional)\n'+
-            '\`/fate [n]\` - will roll 4 fate dice and add [n] to the result (note: n is optional)\n' +
-            '\`/fate [n] = [y]\` - will roll 4 fate dice and add [n] to the result, then compare the total to given [y]\n' +
-            '\`/roll R[rank] [modifiers, comma delineated]\` - will roll the number of dice corresponding to the rank given. If using the comma delineated modifiers, ensure that the number of modifiers given equals the number of ranks/dice being rolled.\n'+
-            '\`/craft [n]R[rank] [modifiers, comma dileneated]\` - will roll the given skill check [n] times')
-            .setFooter('EXAMPLES: \n'+
-            '\t[/roll R1 10] - This will roll 1d100 for a R1 skill/ability, with a modifier of 10.\n'+
-            '\t[/roll R2 40,21] - This will roll 2d100 for a R2 skill/ability, with a modifier of 40 for the first roll, and 21 for the second roll.\n'+
-            '\t[/roll R3 30] - This will roll 3d100 for a R3 skill/ability, with a modifier of 30 for the first, second, and third rolls.\n'+
-            '\t[/craft 5R2 20] - This will roll 2d100 for a R2 crafting skill, with a modifier of 20 for both rolls, 5 times.')
+          `\`${prefix}roll [n]d[N]\` - will roll the specified number of di, with N sides, prints sum\n`+
+          `\`${prefix}gurps [n]\` - will roll 3d6 and check the result against the number you specify\n`+
+          `\`${prefix}pbta [n]\` - will roll 2d6+[n], with a partial success on 7+ and critical success on 10+ (note: n is optional)\n`+
+          `\`${prefix}motw [n]\` - will roll 2d6+[n], with a partial success on 7+ and critical success on 10+ (note: n is optional)\n`+
+          `\`${prefix}fate [n]\` - will roll 4 fate dice and add [n] to the result (note: n is optional)\n` +
+          `\`${prefix}fate [n] = [y]\` - will roll 4 fate dice and add [n] to the result, then compare the total to given [y]\n` +
+          `\`${prefix}roll R[rank] [modifiers, comma delineated]\` - will roll the number of dice corresponding to the rank given. If using the comma delineated modifiers, ensure that the number of modifiers given equals the number of ranks/dice being rolled.\n`+
+          `\`${prefix}craft [n]R[rank] [modifiers, comma dileneated]\` - will roll the given skill check [n] times`)
+          .setFooter(`EXAMPLES: \n`+
+          `\t[${prefix}roll R1 10] - This will roll 1d100 for a R1 skill/ability, with a modifier of 10.\n`+
+          `\t[${prefix}roll R2 40,21] - This will roll 2d100 for a R2 skill/ability, with a modifier of 40 for the first roll, and 21 for the second roll.\n`+
+          `\t[${prefix}roll R3 30] - This will roll 3d100 for a R3 skill/ability, with a modifier of 30 for the first, second, and third rolls.\n`+
+          `\t[${prefix}craft 5R2 20] - This will roll 2d100 for a R2 skill, with a modifier of 20 for both rolls, 5 times.`)
             .setColor('LUMINOUS_VIVID_PINK')
         message.channel.send(embed);
         break;
@@ -211,35 +211,35 @@ client.on("message", function(message) {
         }
         break;
       case 'craft':
+      case 'bulk':
         if (/^\d{1,2}r\d/.test(args[0].toLowerCase())) {
-          let numberOfCraftingRolls, rank;
+          let numberOfBatchRolls, rank;
           if (/^\d{1}r\d/.test(args[0].toLowerCase())) {
-            numberOfCraftingRolls = args[0].substring(0, 1);
+            numberOfBatchRolls = args[0].substring(0, 1);
             rank = args[0].slice(2);
           } else if (/^\d{2}r\d/.test(args[0].toLowerCase())) {
-            numberOfCraftingRolls = args[0].substring(0, 2);
+            numberOfBatchRolls = args[0].substring(0, 2);
             rank = args[0].slice(3);
           } else {
-            log('number of crafting rolls did not match regex');
+            log('numberOfBatchRolls did not match regex');
             break;
           }
-          numberOfCraftingRolls = Number(numberOfCraftingRolls);
+          numberOfBatchRolls = Number(numberOfBatchRolls);
           rank = Number(rank);
-          if (isNaN(numberOfCraftingRolls) || isNaN(rank)) {
-            log('numberOfCraftingRolls or rank was not a number');
+          if (isNaN(numberOfBatchRolls) || isNaN(rank)) {
+            log('numberOfBatchRolls or rank was not a number');
             break;
           }
-          log(`Rank: ${rank},  Number of Crafting Rolls: ${numberOfCraftingRolls}`);
+          log(`Rank: ${rank},  Number of Batch Rolls: ${numberOfBatchRolls}`);
 
           let criteria = getCriteria(args[1], rank);
           log(`Criteria parsed as: ${criteria}`);
 
           let randomConfig = {
-            min: 1, max: 100, n: rank * numberOfCraftingRolls
+            min: 1, max: 100, n: rank * numberOfBatchRolls
           };
           random.generateIntegers(randomConfig).then((result) => {
             let returnedNumbers = result.random.data;
-
 
             // Make an array of arrays to reflect that we are rolling for a set,
             // a multitude of times
@@ -248,8 +248,8 @@ client.on("message", function(message) {
               numberResults.push(returnedNumbers.splice(-rank));
             }
             numberResults = numberResults.reverse();
-            if (numberResults.length != numberOfCraftingRolls) {
-              log(`something went wrong. there are only ${numberResults.length} sets of results, not ${numberOfCraftingRolls}`);
+            if (numberResults.length != numberOfBatchRolls) {
+              log(`something went wrong. there are only ${numberResults.length} sets of results, not ${numberOfBatchRolls}`);
             }
 
             let outputString = '';
@@ -258,6 +258,7 @@ client.on("message", function(message) {
               let criticalSuccesses = 0;  // less than 10 including 10
               let criticalFailures = 0;   // greater than 90, including 90
 
+              // "1: [n,n,n,n,n] - "
               outputString += `${n+1}: \`[${String(resultArray).replace(/,/g, ', ')}]\` - `;
 
               // Compare the rolled numbers with the criteria given
@@ -284,12 +285,15 @@ client.on("message", function(message) {
               outputString += parseSuccessesString(successes);
               outputString += parseCritSuccessString(criticalSuccesses);
               outputString += parseCritFailureString(criticalFailures);
+              // if (criticalSuccesses > 0 && criticalFailures > 0) {
+              //   outputString += `${criticalFailures} Critical Successes are cancelled by Critical Failures. `;
+              // }
               outputString += '\n'
             });
 
             // Send final message to channel
             const embeddedMessage = new Discord.MessageEmbed()
-              .setTitle(`${userAlias}'s Crafting Rolls`)
+              .setTitle(`${userAlias}'s ${command === 'craft' ? 'Crafting ' : ''}Rolls`)
               .setDescription(outputString)
               .setColor('GREEN')
             message.channel.send(embeddedMessage);

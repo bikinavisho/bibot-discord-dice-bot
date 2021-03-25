@@ -68,7 +68,7 @@ function skillCheck(num, threshold) {
   if (num >= 90) {
     return SKILL_CHECK_RESULTS.CRITICAL_FAILURE;
   }
-  if (num < threshold) {
+  if (num <= threshold) {
     return SKILL_CHECK_RESULTS.SUCCESS;
   }
 }

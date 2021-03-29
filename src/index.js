@@ -10,7 +10,7 @@ require('dotenv').config();
 const random = new RandomOrg({ apiKey: process.env.RANDOM_API_KEY });
 const client = new Discord.Client();
 
-const prefix = "\\";
+const prefix = "$";
 
 client.on("ready", () => {
   console.log("I am ready!");
@@ -51,7 +51,7 @@ client.on("message", function(message) {
           `\t[${prefix}roll R1 10] - This will roll 1d100 for a R1 skill/ability, with a modifier of 10.\n`+
           `\t[${prefix}roll R2 40,21] - This will roll 2d100 for a R2 skill/ability, with a modifier of 40 for the first roll, and 21 for the second roll.\n`+
           `\t[${prefix}roll R3 30] - This will roll 3d100 for a R3 skill/ability, with a modifier of 30 for the first, second, and third rolls.\n`+
-          `\t[${prefix}craft 5R2 20] - This will roll 2d100 for a R2 skill, with a modifier of 20 for both rolls, 5 times.`)
+          `\t[${prefix}bulk 5R2 20] - This will roll 2d100 for a R2 skill, with a modifier of 20 for both rolls, 5 times.`)
             .setColor('LUMINOUS_VIVID_PINK')
         message.channel.send(embed);
         break;

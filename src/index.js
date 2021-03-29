@@ -46,7 +46,7 @@ client.on("message", function(message) {
           `\`${prefix}fate [n]\` - will roll 4 fate dice and add [n] to the result (note: n is optional)\n` +
           `\`${prefix}fate [n] = [y]\` - will roll 4 fate dice and add [n] to the result, then compare the total to given [y]\n` +
           `\`${prefix}roll R[rank] [modifiers, comma delineated]\` - will roll the number of dice corresponding to the rank given. If using the comma delineated modifiers, ensure that the number of modifiers given equals the number of ranks/dice being rolled.\n`+
-          `\`${prefix}craft [n]R[rank] [modifiers, comma dileneated]\` - will roll the given skill check [n] times`)
+          `\`${prefix}bulk [n]R[rank] [modifiers, comma dileneated]\` - will roll the given skill check [n] times`)
           .setFooter(`EXAMPLES: \n`+
           `\t[${prefix}roll R1 10] - This will roll 1d100 for a R1 skill/ability, with a modifier of 10.\n`+
           `\t[${prefix}roll R2 40,21] - This will roll 2d100 for a R2 skill/ability, with a modifier of 40 for the first roll, and 21 for the second roll.\n`+

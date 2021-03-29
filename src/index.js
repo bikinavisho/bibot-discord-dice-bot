@@ -10,7 +10,7 @@ require('dotenv').config();
 const random = new RandomOrg({ apiKey: process.env.RANDOM_API_KEY });
 const client = new Discord.Client();
 
-const prefix = "$";
+const prefix = ";";
 
 client.on("ready", () => {
   console.log("I am ready!");

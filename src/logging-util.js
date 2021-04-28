@@ -49,7 +49,7 @@ function cleanupLogDirectory() {
 }
 
 function formatDate(date) {
-  return date.toLocaleDateString('en').replace(/\//g, '-');
+  return date.toLocaleDateString('en', {timeZone: 'America/Monterrey'}).replace(/\//g, '-');
 }
 
 module.exports = {

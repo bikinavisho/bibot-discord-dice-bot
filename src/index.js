@@ -91,6 +91,9 @@ client.on("message", function(message) {
           let criteria = getCriteria(args[1], rank);
           log(`Criteria parsed as: ${criteria}`);
 
+          let skip150 = Boolean(args[2] === 's');
+          log('skip150 value: ' + skip150);
+
           let randomConfig = {
             min: 1, max: 100, n: rank
           };
@@ -99,10 +102,11 @@ client.on("message", function(message) {
             let successes = 0;
             let criticalSuccesses = 0;  // less than 10 including 10
             let criticalFailures = 0;   // greater than 90, including 90
+
             returnedNumbers.forEach((num, i) => {
               log(`comparing ${num} with ${criteria[i]}`)
               // Add 50 to the first roll and evaluate result of comparison
-              switch(skillCheck(num, criteria[i] + (i === 0 ? 50 : 0))) {
+              switch(skillCheck(num, criteria[i] + (i === 0 ? 50 : 0), skip150)) {
                 case SKILL_CHECK_RESULTS.CRITICAL_FAILURE:
                   log('\tcrit failure')
                   criticalFailures++;
@@ -167,8 +171,22 @@ client.on("message", function(message) {
             resultString += parseSuccessesString(successes);
             resultString += parseCritSuccessString(criticalSuccesses);
             resultString += parseCritFailureString(criticalFailures);
+
+            // Compile the string of rolled number array `[50, 50, 50]`
+            let rolledNumberString = `\`[${String(returnedNumbers).replace(/,/g, ', ')}]\``;
+
+            // Replace any dice that shouldn't have been rolled with the letter S
+            if (skip150) {
+              returnedNumbers.forEach((n, i) => {
+                if ((i == 0 && criteria[i] + 50 >= 150) || criteria[i] >= 150) {
+                  rolledNumberString = rolledNumberString.replace(String(n), 'S');
+                }
+              });
+              resultString += "\n\t*Any thresholds above 150 have been automatically added to successes, marked by an `S`.*"
+            }
+
             // Send final message to channel
-            message.channel.send(`${userAlias} rolled... \`[${String(returnedNumbers).replace(/,/g, ', ')}]\` Result: ${resultString}`)
+            message.channel.send(`${userAlias} rolled... ${rolledNumberString} Result: ${resultString}`)
               .then((resultMessage) => {
                 if ((successes > 0 || criticalSuccesses > 0) && criticalFailures == 0) {
                   resultMessage.react('🎉');

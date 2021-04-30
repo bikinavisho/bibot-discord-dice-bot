@@ -61,7 +61,13 @@ const SKILL_CHECK_RESULTS = {
   CRITICAL_FAILURE: 'CRITICAL_FAILURE'
 };
 
-function skillCheck(num, threshold) {
+function skillCheck(num, threshold, skip150 = false) {
+  if (threshold >= 150 && skip150) {
+    // if skip auto successes is enabled and the number is correct,
+    //           just return a success
+    log('\tdice roll has been replaced with an auto success')
+    return SKILL_CHECK_RESULTS.SUCCESS;
+  }
   if (num <= 10) {
     return SKILL_CHECK_RESULTS.CRITICAL_SUCCESS;
   }

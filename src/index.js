@@ -51,7 +51,8 @@ client.on("message", function(message) {
           `\t[${prefix}roll R1 10] - This will roll 1d100 for a R1 skill/ability, with a modifier of 10.\n`+
           `\t[${prefix}roll R2 40,21] - This will roll 2d100 for a R2 skill/ability, with a modifier of 40 for the first roll, and 21 for the second roll.\n`+
           `\t[${prefix}roll R3 30] - This will roll 3d100 for a R3 skill/ability, with a modifier of 30 for the first, second, and third rolls.\n`+
-          `\t[${prefix}bulk 5R2 20] - This will roll 2d100 for a R2 skill, with a modifier of 20 for both rolls, 5 times.`)
+          `\t[${prefix}bulk 5R2 20] - This will roll 2d100 for a R2 skill, with a modifier of 20 for both rolls, 5 times.\n`+
+          `\t[${prefix}roll R2 100,20 -s -a2] - This will roll 2d100 for a R2 skill, with any thresholds above 150 counted as an automatic success(\`-s\`), and adds 2 automatic successes to the final total. (\`-a2\`)`)
             .setColor('LUMINOUS_VIVID_PINK')
         message.channel.send(embed);
         break;
@@ -91,8 +92,14 @@ client.on("message", function(message) {
           let criteria = getCriteria(args[1], rank);
           log(`Criteria parsed as: ${criteria}`);
 
-          let skip150 = Boolean(args[2] === 's');
+          log();
+
+          let optionalArguments = args.filter((s) => s.match(/^-\w/))
+          log('optionalArguments: ', optionalArguments);
+          let skip150 = Boolean(optionalArguments.find((s) => s.match(/^-s/)));
           log('skip150 value: ' + skip150);
+          let autoSuccesses = optionalArguments.find((s) => s.match(/^-a\d/)) ? Number(optionalArguments.find((s) => s.match(/^-a\d/)).replace("-", "").replace("a", "")) : 0;
+          log('autoSuccesses value: ' + autoSuccesses);
 
           let randomConfig = {
             min: 1, max: 100, n: rank
@@ -102,6 +109,10 @@ client.on("message", function(message) {
             let successes = 0;
             let criticalSuccesses = 0;  // less than 10 including 10
             let criticalFailures = 0;   // greater than 90, including 90
+
+            if (autoSuccesses > 0) {
+              successes += autoSuccesses;
+            }
 
             returnedNumbers.forEach((num, i) => {
               log(`comparing ${num} with ${criteria[i]}`)

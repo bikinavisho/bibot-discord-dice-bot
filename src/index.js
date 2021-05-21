@@ -80,14 +80,14 @@ client.on("message", function(message) {
         if (!isNaN(Number(args[0]))) {
           log('told to roll a number instead of a dice')
           message.channel.send(`${userAlias} rolled ${args[0]}.`);
-          return;
+          break;
         }
 
         if (_.isEmpty(args[0])){
           // TODO: implement troll logic of randomly generating a number and then rolling that die
           log('told to roll but no parameters specified')
           message.channel.send(`What did you _think_ would happen, ${userAlias}?`);
-          return;
+          break;
         }
 
         // TODO: IF SENT ROLL RANDOM SHIT, RESPOND WITH "I'M SORRY, I CAN'T DO THAT"
@@ -233,17 +233,17 @@ client.on("message", function(message) {
         } else {
           if (/[0-9]{1,2}d[0-9]{1,3}/.test(args[0]) === false) {
             log(`argument not in proper format. received ${args[0]} instead of xdy`);
-            return;
+            break;
           }
           let numOfDice = Number(args[0].slice(0, args[0].indexOf('d')));
           let dice = Number(args[0].slice(args[0].indexOf('d')+1))
           if (isNaN(numOfDice)){
             log('number of dice given was not a number');
-            return;
+            break;
           }
           if (isNaN(dice)){
             log('dice given was not a number');
-            return;
+            break;
           }
           log(`rolling ${numOfDice} d${dice}`);
           let randomConfig = {
@@ -355,7 +355,7 @@ client.on("message", function(message) {
         let threshold = args[0];
         if (isNaN(threshold)) {
           log('comparative number was not a number')
-          return;
+          break;
         }
         log('rolling 3d6')
         let gurpsRandomConfig = {

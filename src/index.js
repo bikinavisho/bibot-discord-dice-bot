@@ -83,6 +83,12 @@ client.on("message", function(message) {
           return;
         }
 
+        if (_.isEmpty(args[0])){
+          // TODO: implement troll logic of randomly generating a number and then rolling that die
+          log('told to roll but no parameters specified')
+          message.channel.send(`What did you _think_ would happen, ${userAlias}?`);
+        }
+
         // TODO: IF SENT ROLL RANDOM SHIT, RESPOND WITH "I'M SORRY, I CAN'T DO THAT"
         if (args[0].toLowerCase().startsWith('r')){
           // we are doing ranked rolling

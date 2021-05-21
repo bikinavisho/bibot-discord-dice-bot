@@ -87,6 +87,7 @@ client.on("message", function(message) {
           // TODO: implement troll logic of randomly generating a number and then rolling that die
           log('told to roll but no parameters specified')
           message.channel.send(`What did you _think_ would happen, ${userAlias}?`);
+          return;
         }
 
         // TODO: IF SENT ROLL RANDOM SHIT, RESPOND WITH "I'M SORRY, I CAN'T DO THAT"

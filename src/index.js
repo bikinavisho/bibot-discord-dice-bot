@@ -76,6 +76,13 @@ client.on("message", function(message) {
         break;
       case 'r':
       case 'roll':
+        // if not not a number (read: is a number)
+        if (!isNaN(Number(args[0]))) {
+          log('told to roll a number instead of a dice')
+          message.channel.send(`${userAlias} rolled ${args[0]}.`);
+          return;
+        }
+
         // TODO: IF SENT ROLL RANDOM SHIT, RESPOND WITH "I'M SORRY, I CAN'T DO THAT"
         if (args[0].toLowerCase().startsWith('r')){
           // we are doing ranked rolling
@@ -217,6 +224,10 @@ client.on("message", function(message) {
           });
 
         } else {
+          if (/[0-9]{1,2}d[0-9]{1,3}/.test(args[0]) === false) {
+            log(`argument not in proper format. received ${args[0]} instead of xdy`);
+            return;
+          }
           let numOfDice = Number(args[0].slice(0, args[0].indexOf('d')));
           let dice = Number(args[0].slice(args[0].indexOf('d')+1))
           if (isNaN(numOfDice)){

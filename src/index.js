@@ -231,7 +231,7 @@ client.on("message", function(message) {
           });
 
         } else {
-          if (/[0-9]{1,2}d[0-9]{1,3}/.test(args[0]) === false || /\d{1,2}d\d[+-]\d{1,2}/.test(args[0]) === false) {
+          if (/[0-9]{1,2}d[0-9]{1,3}/.test(args[0]) === false && /\d{1,2}d\d[+-]\d{1,2}/.test(args[0]) === false) {
             log(`argument not in proper format. received ${args[0]} instead of xdy`);
             break;
           }

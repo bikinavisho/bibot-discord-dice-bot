@@ -231,12 +231,26 @@ client.on("message", function(message) {
           });
 
         } else {
-          if (/[0-9]{1,2}d[0-9]{1,3}/.test(args[0]) === false) {
+          if (/[0-9]{1,2}d[0-9]{1,3}/.test(args[0]) === false || /\d{1,2}d\d[+-]\d{1,2}/.test(args[0]) === false) {
             log(`argument not in proper format. received ${args[0]} instead of xdy`);
             break;
           }
-          let numOfDice = Number(args[0].slice(0, args[0].indexOf('d')));
-          let dice = Number(args[0].slice(args[0].indexOf('d')+1))
+
+          let modifier, numOfDice, dice;
+          // format: 1d9+9, 1d10+10, 1d100+100
+          if (/\d{1,2}d\d{1,3}[+-]\d{1,3}/.test(args[0])) {
+            let sign = args[0].indexOf('+') !== -1 ? '+' : '-'
+
+            modifier = Number(args[0].slice(args[0].indexOf(sign)+1))
+            dice = Number(args[0].slice(args[0].indexOf('d')+1, args[0].indexOf(sign)))
+          }
+          // format: 1d9, 1d10, 1d100
+          else if (/[0-9]{1,2}d[0-9]{1,3}/.test(args[0])) {
+            dice = Number(args[0].slice(args[0].indexOf('d')+1))
+          }
+          log('numOfDice ' + args[0].slice(0, args[0].indexOf('d')))
+          numOfDice = Number(args[0].slice(0, args[0].indexOf('d')));
+
           if (isNaN(numOfDice)){
             log('number of dice given was not a number');
             break;
@@ -251,7 +265,11 @@ client.on("message", function(message) {
           };
           random.generateIntegers(randomConfig).then((result) => {
             let returnedNumbers = result.random.data;
-            message.channel.send(`${userAlias} Roll: \`[${String(returnedNumbers).replace(/,/g, ', ')}]\` \nTotal: \`${_.sum(returnedNumbers)}\``);
+            if (modifier) {
+              message.channel.send(`${userAlias} Roll: \`[${String(returnedNumbers).replace(/,/g, ', ')}]\` + \`${modifier}\` \nTotal: \`${_.sum(returnedNumbers, modifier)}\``);
+            } else {
+              message.channel.send(`${userAlias} Roll: \`[${String(returnedNumbers).replace(/,/g, ', ')}]\` \nTotal: \`${_.sum(returnedNumbers)}\``);
+            }
           }).catch((error) => {
             log('ERROR: RANDOM ORG API HAS FAILED US. SEE ERROR: ', error)
           });

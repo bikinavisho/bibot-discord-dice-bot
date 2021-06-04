@@ -266,7 +266,7 @@ client.on("message", function(message) {
           random.generateIntegers(randomConfig).then((result) => {
             let returnedNumbers = result.random.data;
             if (modifier) {
-              message.channel.send(`${userAlias} Roll: \`[${String(returnedNumbers).replace(/,/g, ', ')}]\` + \`${modifier}\` \nTotal: \`${_.sum(returnedNumbers, modifier)}\``);
+              message.channel.send(`${userAlias} Roll: \`[${String(returnedNumbers).replace(/,/g, ', ')}]\` + \`${modifier}\` \nTotal: \`${_.sum([...returnedNumbers, modifier])}\``);
             } else {
               message.channel.send(`${userAlias} Roll: \`[${String(returnedNumbers).replace(/,/g, ', ')}]\` \nTotal: \`${_.sum(returnedNumbers)}\``);
             }

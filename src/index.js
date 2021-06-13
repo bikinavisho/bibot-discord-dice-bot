@@ -597,7 +597,7 @@ client.on("message", function(message) {
             success = true;
           } else if (_.includes(returnedNumbers, 5) || _.includes(returnedNumbers, 4)) {
             log(`${userAlias} partially succeeded`)
-            raccoonMessageString += `${userAlias} partially succeeded. Select one from the following list.`
+            raccoonMessageString += `${userAlias} partially succeeded. Select one from the following list.\n`
             partialSuccess = true;
           } else {
             log(`${userAlias} failed`)

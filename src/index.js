@@ -273,7 +273,8 @@ client.on("message", function(message) {
               'I refuse to comply with your foolish request.',
               'Fine. 1. You got a 1. Are you happy now?',
               'No.',
-              'I refuse.'
+              'I refuse.',
+              'I must respectfully decline your request. (Because it\'s stupid.)'
             ];
             // Randomly select one of the above success messages
             let chosenIndex = _.random(0, rejectionMessages.length-1)

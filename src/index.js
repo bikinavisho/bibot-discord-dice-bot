@@ -586,7 +586,7 @@ client.on("message", function(message) {
         random.generateIntegers(raccoonRandomConfig).then((result) => {
           let returnedNumbers = result.random.data;
           let raccoonMessageString;
-          raccoonMessageString = `${userAlias} Rolled: \`${raccoonStat}d6\` = (\`${String(returnedNumbers).replace(/,/g, ' + ')}\`) \n`
+          raccoonMessageString = `${userAlias} Rolled: \`${raccoonStat}d6\` = (\`${String(returnedNumbers).replace(/,/g, ', ')}\`) \n`
           
           let success = false;
           let partialSuccess = false;

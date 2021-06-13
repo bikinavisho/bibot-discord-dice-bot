@@ -45,7 +45,7 @@ client.on("message", function(message) {
           `\`${prefix}motw [n]\` - will roll 2d6+[n], with a partial success on 7+ and critical success on 10+ (note: n is optional)\n`+
           `\`${prefix}fate [n]\` - will roll 4 fate dice and add [n] to the result (note: n is optional)\n` +
           `\`${prefix}fate [n] = [y]\` - will roll 4 fate dice and add [n] to the result, then compare the total to given [y]\n` +
-          `\`${prefix}raccoon [eyes/hands/feet] [n]\` - will roll n d6 according to the correponding raccoon stat and tell you the result of the highest dice rolled.\n` + 
+          `\`${prefix}raccoon [eyes/hands/feet] [n]\` - will roll n d6 according to the correponding raccoon stat and tell you the result of the highest dice rolled.\n` +
           `\`${prefix}roll R[rank] [modifiers, comma delineated]\` - will roll the number of dice corresponding to the rank given. If using the comma delineated modifiers, ensure that the number of modifiers given equals the number of ranks/dice being rolled.\n`+
           `\`${prefix}bulk [n]R[rank] [modifiers, comma dileneated]\` - will roll the given skill check [n] times`)
           .setFooter(`EXAMPLES: \n`+
@@ -91,7 +91,6 @@ client.on("message", function(message) {
           break;
         }
 
-        // TODO: IF SENT ROLL RANDOM SHIT, RESPOND WITH "I'M SORRY, I CAN'T DO THAT"
         if (args[0].toLowerCase().startsWith('r')){
           // we are doing ranked rolling
           // expected command: [roll R3 10] OR [roll R3 10,10,10]
@@ -260,6 +259,27 @@ client.on("message", function(message) {
             log('dice given was not a number');
             break;
           }
+
+          // This bot disapproves of you trying to roll a d1.
+          if (dice == 1) {
+            let rejectionMessages = [
+              'No.',
+              'I refuse.',
+              'No. Why do you even want to roll a d1?',
+              'No.',
+              'I refuse.',
+              'No. I\'m not rolling a d1.',
+              'No.',
+              'I refuse to comply with your foolish request.',
+              'Fine. 1. You got a 1. Are you happy now?',
+              'No.',
+              'I refuse.'
+            ];
+            // Randomly select one of the above success messages
+            let chosenIndex = _.random(0, rejectionMessages.length-1)
+            message.channel.send(rejectionMessages[chosenIndex]);
+          }
+
           log(`rolling ${numOfDice} d${dice}`);
           let randomConfig = {
             min: 1, max: dice, n: numOfDice
@@ -588,7 +608,7 @@ client.on("message", function(message) {
           let returnedNumbers = result.random.data;
           let raccoonMessageString;
           raccoonMessageString = `${userAlias} Rolled: \`${raccoonStat}d6\`: \`[${String(returnedNumbers).replace(/,/g, ', ')}]\` \n`
-          
+
           let success = false;
           let partialSuccess = false;
           let failure = false;
@@ -605,7 +625,7 @@ client.on("message", function(message) {
             raccoonMessageString += `${userAlias} failed. Mark one point of Stress against this Virtue.`
             failure = true;
           }
-          
+
           if (success || partialSuccess) {
             raccoonMessageString += `> -${successArray[0]}\n> -${successArray[1]}\n> -${successArray[2]}`
           }

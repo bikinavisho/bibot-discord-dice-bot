@@ -545,6 +545,87 @@ client.on("message", function(message) {
           log('ERROR: RANDOM ORG API HAS FAILED US. SEE ERROR: ', error)
         });
         break;
+      case 'raccoon':
+        let raccoonMode = args[0];
+        let raccoonStat = Number(args[1]);
+        if (isNaN(raccoonStat)) {
+          log('stat was not a number')
+          return;
+        }
+        let successArray;
+        switch(raccoonMode) {
+          case 'eyes':
+            successArray = [
+              'Your conclusion is confident. If you pick this option, you describe what’s really going on; otherwise, the GM does. (Or the player to your left, if you’re playing without a GM.)',
+              'Your conclusion is persuasive. Each raccoon other than you rolls one extra die the next time they act on the information you provide.',
+              'Your conclusion is actually correct.'
+            ];
+            break;
+          case 'hands':
+            successArray = [
+              'You obtain what you were aiming for. If you pick this option, you describe the success of your mischief; otherwise, you end up stealing the wrong object, getting an unexpected response from whatever you’re messing with, etc., as described by the GM. (Or by the player to your left, if you’re playing without a GM.)',
+              'You gain a temporary tool, asset, or other advantage. Set aside one die; at any point, you or another raccoon can describe how they exploit the advantage, pick up the die, and add it to their roll. You can even do this after seeing a roll’s outcome, if you can think of a way that the asset in question might save your butt. The die goes away after it’s used.',
+              'You don’t draw unwanted attention to yourself in the process.'
+            ];
+            break;
+          case 'feet':
+            successArray = [
+              'You get where you want to go. If you pick this result, you describe how you avoid the threat or reach your destination; otherwise, the GM describes the new predicament you’ve gotten yourself into. (Or the player to your left, if you’re playing without a GM.)',
+              'You give another raccoon a boost, allowing them to avoid the threat or reach your destination instead of you – or in addition to you, if you also picked the first option.',
+              'You manage not to look completely ridiculous. Clear one point of Stress from any Virtue.'
+            ];
+            break;
+          default:
+            log(`invalid raccoon mode: ${raccoonMode}`);
+            return;
+        }
+        log(`rolling ${raccoonStat}d6`);
+        let raccoonRandomConfig = {
+          min: 1, max: 6, n: raccoonStat
+        };
+        random.generateIntegers(raccoonRandomConfig).then((result) => {
+          let returnedNumbers = result.random.data;
+          let raccoonMessageString;
+          raccoonMessageString = `${userAlias} Rolled: \`${raccoonStat}d6\` = (\`${String(returnedNumbers).replace(/,/g, ' + ')}\`) \n`
+          
+          let success = false;
+          let partialSuccess = false;
+          let failure = false;
+          if (_.includes(returnedNumbers, 6)) {
+            log(`${userAlias} succeeded critically`)
+            raccoonMessageString += `${userAlias} succeeded critically. Select two from the following list.\n`
+            success = true;
+          } else if (_.includes(returnedNumbers, 5) || _.includes(returnedNumbers, 4)) {
+            log(`${userAlias} partially succeeded`)
+            raccoonMessageString += `${userAlias} partially succeeded. Select one from the following list.`
+            partialSuccess = true;
+          } else {
+            log(`${userAlias} failed`)
+            raccoonMessageString += `${userAlias} failed. Mark one point of Stress against this Virtue.`
+            failure = true;
+          }
+          
+          if (success || partialSuccess) {
+            raccoonMessageString += `> -${successArray[0]}\n> -${successArray[1]}\n> -${successArray[2]}`
+          }
+          message.channel.send(raccoonMessageString)
+            .then((raccoonMessage) => {
+              if (failure) {
+                raccoonMessage.react('😢');
+              }
+              if (success) {
+                raccoonMessage.react('🎉');
+              }
+              if (partialSuccess) {
+                raccoonMessage.react('🙂');
+              }
+            }).catch((reactError) => {
+              log('Error with adding emoji: ', reactError)
+            });
+        }).catch((error) => {
+          log('ERROR: RANDOM ORG API HAS FAILED US. SEE ERROR: ', error)
+        });
+        break;
     }
     // end try
   } catch (exep) {

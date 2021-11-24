@@ -8,7 +8,16 @@ const {getCriteria, parseSuccessesString, parseCritSuccessString, parseCritFailu
 require('dotenv').config();
 
 const random = new RandomOrg({ apiKey: process.env.RANDOM_API_KEY });
-const client = new Discord.Client();
+const client = new Discord.Client(
+  { intents: [
+    Discord.Intents.FLAGS.GUILDS,
+    Discord.Intents.FLAGS.GUILD_MESSAGES,
+    Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+    //TODO: DMing the bot no longer works. figure out why.
+    Discord.Intents.FLAGS.DIRECT_MESSAGES,
+    Discord.Intents.FLAGS.DIRECT_MESSAGE_REACTIONS
+  ] }
+);
 
 const prefix = ";";
 
@@ -16,8 +25,16 @@ client.on("ready", () => {
   console.log("I am ready!");
 });
 
-client.on("message", function(message) {
+// automatically join any new threads
+client.on('threadCreate', (thread) => {
+  if (thread.joinable) thread.join();
+});
+
+client.on("messageCreate", function(message) {
   if (message.author.bot) return;
+  if (message.channel.type === "dm" && !message.content.startsWith(prefix)) {
+    message.content = prefix + message.content;
+  }
   if (!message.content.startsWith(prefix)) return;
 
   const userAlias = message.member && message.member.nickname ? message.member.nickname : message.author.username;
@@ -26,7 +43,7 @@ client.on("message", function(message) {
   const commandBody = message.content.slice(prefix.length);
   const args = _.compact(commandBody.split(' '));
   // command name (the first arg!)
-  const command = args.shift().toLowerCase();
+  const command = args?.shift()?.toLowerCase();
   log('--------\n');
   log('Time of Request: ', new Date(Date.now()).toLocaleString())
   log(`Request initiated by: ${userAlias}`)

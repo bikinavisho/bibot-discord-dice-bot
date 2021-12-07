@@ -191,7 +191,7 @@ client.on("messageCreate", function(message) {
                 let chosenIndex = _.random(0, successMessages.length-1)
                 // Add the success message to the final success message string
                 successMessage += successMessages[chosenIndex];
-                successMessage += ` (${userAlias} rolled a \`${num}\`!)`
+                successMessage += `\n\t*${userAlias} rolled a \`${num}\`! Gain 1 talent.*`
                 message.channel.send(successMessage).then((happyMessage) => {
                   happyMessage.react('🎉')
                 }).catch((error) => {
@@ -207,6 +207,8 @@ client.on("messageCreate", function(message) {
                   })
               }
             });
+            // subtract critical failures from the total number of successes
+            successes = successes - criticalFailures;
 
             // Construct the result string
             let resultString = '';
@@ -225,6 +227,13 @@ client.on("messageCreate", function(message) {
                 }
               });
               resultString += "\n\t*Any thresholds above 150 have been automatically added to successes, marked by an `S`.*"
+            }
+
+            if (criticalSuccesses > 0) {
+              resultString += `\n\t*Gain ${criticalSuccesses} XP.* `
+            }
+            if (criticalFailures > 0) {
+              resultString += `\n\t*Note: Critical failures have been subtracted from the total number of successes.*`
             }
 
             // Send final message to channel

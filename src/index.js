@@ -156,6 +156,7 @@ client.on("messageCreate", function(message) {
                 case SKILL_CHECK_RESULTS.CRITICAL_SUCCESS:
                   log('\tcrit success')
                   criticalSuccesses++;
+                  successes++;
                 case SKILL_CHECK_RESULTS.SUCCESS:
                   log('\tsuccess')
                   successes++;

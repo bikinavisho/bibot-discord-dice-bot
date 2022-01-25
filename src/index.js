@@ -287,6 +287,16 @@ client.on("messageCreate", function(message) {
             break;
           }
 
+          // if number of dice is zero just print
+          if (numOfDice === 0) {
+            if (modifier) {
+              message.channel.send(`${userAlias} Roll: \`[0]\` + \`${modifier}\` \nTotal: \`${_.sum([0, modifier])}\``);
+            } else {
+              message.channel.send(`${userAlias} Roll: \`[0]\` \nTotal: \`0\``);
+            }
+            break;
+          }
+
           // This bot disapproves of you trying to roll a d1.
           if (dice == 1) {
             let rejectionMessages = [

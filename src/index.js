@@ -72,7 +72,7 @@ client.on("messageCreate", function(message) {
           `\t[${prefix}bulk 5R2 20] - This will roll 2d100 for a R2 skill, with a modifier of 20 for both rolls, 5 times.\n`+
           `\t[${prefix}roll R2 100,20 -s -a2] - This will roll 2d100 for a R2 skill, with any thresholds above 150 counted as an automatic success(\`-s\`), and adds 2 automatic successes to the final total. (\`-a2\`)`)
             .setColor('LUMINOUS_VIVID_PINK')
-        message.channel.send(embed);
+        message.channel.send({embeds: [embed]});
         break;
       case 'ping':
         const timeTaken = Date.now() - message.createdTimestamp;
@@ -420,7 +420,7 @@ client.on("messageCreate", function(message) {
               .setTitle(`${userAlias}'s ${command === 'craft' ? 'Crafting ' : ''}Rolls`)
               .setDescription(outputString)
               .setColor('GREEN')
-            message.channel.send(embeddedMessage);
+            message.channel.send({embeds: [embeddedMessage]});
           }).catch((error) => {
             log('ERROR: RANDOM ORG API HAS FAILED US. SEE ERROR: ', error)
           });

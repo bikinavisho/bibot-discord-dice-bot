@@ -92,6 +92,9 @@ client.on("messageCreate", function(message) {
       case 'hi':
         message.reply({content: `Hello, ${userAlias}!`, allowedMentions: { repliedUser: false }});
         break;
+      case 'perish':
+        message.channel.send('<a:elmofire:898009933361078332>');
+        break;
       case 'r':
       case 'roll':
         // if not not a number (read: is a number)

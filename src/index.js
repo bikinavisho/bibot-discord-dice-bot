@@ -80,7 +80,7 @@ client.on("messageCreate", function(message) {
         message.reply(`Pong! This message had a latency of ${timeTaken}ms.`);
         break;
       case 'rip':
-        message.channel.send('<:rip:752693741440991323>');
+        replyToUserWithoutMention(message, '<:rip:752693741440991323>');
         break;
       case 'tada':
         message.channel.send('Celebration!').then((myMessage) => {
@@ -104,7 +104,7 @@ client.on("messageCreate", function(message) {
         if (_.isEmpty(args[0])){
           // TODO: implement troll logic of randomly generating a number and then rolling that die
           log('told to roll but no parameters specified')
-          message.channel.send(`What did you _think_ would happen, ${userAlias}?`);
+          replyToUserWithoutMention(message, `What did you _think_ would happen, ${userAlias}?`);
           break;
         }
 
@@ -289,20 +289,24 @@ client.on("messageCreate", function(message) {
 
           // check for random.org limits
           if (numOfDice > 10000) {
-            message.channel.send('Please select a number of dice smaller than 10,000.');
+            replyToUserWithoutMention(message, 'Please select a number of dice smaller than 10,000.');
             break;
           }
           if (numOfDice < 1) {
-            message.channel.send('Please select a positive number of dice.');
+            replyToUserWithoutMention(message, 'Please select a positive number of dice.');
+            break;
+          }
+          if (dice > 2000000000) {
+            replyToUserWithoutMention(message, 'Please select a di with less than 2,000,000,000 sides.')
             break;
           }
 
           // if number of dice is zero just print
           if (numOfDice === 0) {
             if (modifier) {
-              message.channel.send(`${userAlias} Roll: \`[0]\` + \`${modifier}\` \nTotal: \`${_.sum([0, modifier])}\``);
+              replyToUserWithoutMention(message, `${userAlias} Roll: \`[0]\` + \`${modifier}\` \nTotal: \`${_.sum([0, modifier])}\``)
             } else {
-              message.channel.send(`${userAlias} Roll: \`[0]\` \nTotal: \`0\``);
+              replyToUserWithoutMention(message, `${userAlias} Roll: \`[0]\` \nTotal: \`0\``)
             }
             break;
           }
@@ -325,7 +329,7 @@ client.on("messageCreate", function(message) {
             ];
             // Randomly select one of the above success messages
             let chosenIndex = _.random(0, rejectionMessages.length-1)
-            message.channel.send(rejectionMessages[chosenIndex]);
+            replyToUserWithoutMention(message, rejectionMessages[chosenIndex]);
             break;
           }
 
@@ -335,11 +339,17 @@ client.on("messageCreate", function(message) {
           };
           random.generateIntegers(randomConfig).then((result) => {
             let returnedNumbers = result.random.data;
+            let messageContent;
             if (modifier) {
-              message.channel.send(`${userAlias} Roll: \`[${String(returnedNumbers).replace(/,/g, ', ')}]\` + \`${modifier}\` \nTotal: \`${_.sum([...returnedNumbers, modifier])}\``);
+              messageContent = `${userAlias} Roll: \`[${String(returnedNumbers).replace(/,/g, ', ')}]\` + \`${modifier}\` \nTotal: \`${_.sum([...returnedNumbers, modifier])}\``;
             } else {
-              message.channel.send(`${userAlias} Roll: \`[${String(returnedNumbers).replace(/,/g, ', ')}]\` \nTotal: \`${_.sum(returnedNumbers)}\``);
+              messageContent = `${userAlias} Roll: \`[${String(returnedNumbers).replace(/,/g, ', ')}]\` \nTotal: \`${_.sum(returnedNumbers)}\``;
             }
+            if (messageContent.length > 2000) {
+              messageContent = messageContent.slice(0, 2000);
+              log('message has been truncated due to excessive length');
+            }
+            replyToUserWithoutMention(message, messageContent);
           }).catch((error) => {
             log('ERROR: RANDOM ORG API HAS FAILED US. SEE ERROR: ', error)
           });
@@ -707,6 +717,10 @@ client.on("messageCreate", function(message) {
   cleanupLogDirectory();
 
 });
+
+function replyToUserWithoutMention(message, content) {
+  return message.reply({content, allowedMentions: { repliedUser: false }});
+}
 
 
 

@@ -13,3 +13,7 @@ backup random package in case random.org API reaches quota/breaks
 -----------------------------------------------------
 print the logs
 `heroku logs -a bibot-discord-bot`
+
+-----------------------------------------------------
+`message.channel.send()` sends message in channel it was toggled in
+`message.reply()` replies to the user's message who toggled it, with @

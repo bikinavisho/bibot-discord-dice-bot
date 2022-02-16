@@ -297,7 +297,7 @@ client.on("messageCreate", function(message) {
             break;
           }
           if (dice > 2000000000) {
-            replyToUserWithoutMention(message, 'Please select a di with less than 2,000,000,000 sides.')
+            replyToUserWithoutMention(message, 'Please select a dice with less than 2,000,000,000 sides.')
             break;
           }
 
@@ -345,8 +345,11 @@ client.on("messageCreate", function(message) {
             } else {
               messageContent = `${userAlias} Roll: \`[${String(returnedNumbers).replace(/,/g, ', ')}]\` \nTotal: \`${_.sum(returnedNumbers)}\``;
             }
+            //TODO: come up with a better solution to exceeding Discord's max character limit
             if (messageContent.length > 2000) {
-              messageContent = messageContent.slice(0, 2000);
+              let appendToEndString = '...`]'
+              messageContent = messageContent.slice(0, 2000 - appendToEndString.length);
+              messageContent += appendToEndString;
               log('message has been truncated due to excessive length');
             }
             replyToUserWithoutMention(message, messageContent);

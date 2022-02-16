@@ -90,7 +90,7 @@ client.on("messageCreate", function(message) {
         });
         break;
       case 'hi':
-        message.channel.send(`Hello, ${userAlias}!`);
+        message.reply({content: `Hello, ${userAlias}!`, allowedMentions: { repliedUser: false }});
         break;
       case 'r':
       case 'roll':
@@ -287,6 +287,16 @@ client.on("messageCreate", function(message) {
             break;
           }
 
+          // check for random.org limits
+          if (numOfDice > 10000) {
+            message.channel.send('Please select a number of dice smaller than 10,000.');
+            break;
+          }
+          if (numOfDice < 1) {
+            message.channel.send('Please select a positive number of dice.');
+            break;
+          }
+
           // if number of dice is zero just print
           if (numOfDice === 0) {
             if (modifier) {
@@ -316,6 +326,7 @@ client.on("messageCreate", function(message) {
             // Randomly select one of the above success messages
             let chosenIndex = _.random(0, rejectionMessages.length-1)
             message.channel.send(rejectionMessages[chosenIndex]);
+            break;
           }
 
           log(`rolling ${numOfDice} d${dice}`);

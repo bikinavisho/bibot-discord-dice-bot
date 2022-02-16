@@ -297,7 +297,7 @@ client.on("messageCreate", function(message) {
             break;
           }
           if (dice > 2000000000) {
-            replyToUserWithoutMention(message, 'Please select a dice with less than 2,000,000,000 sides.')
+            replyToUserWithoutMention(message, 'Please select a die with less than 2,000,000,000 sides.')
             break;
           }
 

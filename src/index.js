@@ -351,10 +351,8 @@ client.on("messageCreate", function(message) {
             //TODO: come up with a better solution to exceeding Discord's max character limit
             if (messageContent.length > 2000) {
               let appendToEndString = '...`]' + messageContent.slice(messageContent.indexOf(']`')+2)
-              console.log('appendToEndString: ', appendToEndString);
-              messageContent = messageContent.slice(0, Math.abs(2000 - appendToEndString.length));
+              messageContent = messageContent.slice(0, (2000 - appendToEndString.length));
               messageContent += appendToEndString;
-              console.log('messageContent.length: ', messageContent.length)
               log('message has been truncated due to excessive length');
             }
             replyToUserWithoutMention(message, messageContent);

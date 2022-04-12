@@ -295,7 +295,7 @@ client.on("messageCreate", function(message) {
             replyToUserWithoutMention(message, 'Please select a number of dice smaller than 10,000.');
             break;
           }
-          if (numOfDice < 1) {
+          if (numOfDice < 0) {
             replyToUserWithoutMention(message, 'Please select a positive number of dice.');
             break;
           }

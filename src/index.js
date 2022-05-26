@@ -79,6 +79,12 @@ client.on("messageCreate", function(message) {
         // message.reply  @s the user who initiated the command
         message.reply(`Pong! This message had a latency of ${timeTaken}ms.`);
         break;
+      case 'bing':
+        message.reply('bong');
+        if (_.includes(userAlias, "Steven")) {
+          message.channel.send("Are you happy now Steven?");
+        }
+        break;
       case 'rip':
         replyToUserWithoutMention(message, '<:rip:752693741440991323>');
         break;

@@ -84,6 +84,9 @@ client.on("messageCreate", function(message) {
         if (_.includes(userAlias, "Steven")) {
           message.channel.send("Are you happy now Steven?");
         }
+        if (message?.author?.username === "aDiCt#6430") {
+          message.channel.send("Are you happy n   ow Steve?");
+        }
         break;
       case 'rip':
         replyToUserWithoutMention(message, '<:rip:752693741440991323>');

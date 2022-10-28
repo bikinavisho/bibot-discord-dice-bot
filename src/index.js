@@ -161,6 +161,9 @@ client.on("messageCreate", function(message) {
               log(`comparing ${num} with ${criteria[i]}`)
               // Add 50 to the first roll and evaluate result of comparison
               switch(skillCheck(num, criteria[i] + (i === 0 ? 50 : 0), skip150)) {
+                case SKILL_CHECK_RESULTS.NO_SUCCESS:
+                  log('\tno success, crit fail canceled by high threshold');
+                  break;
                 case SKILL_CHECK_RESULTS.CRITICAL_FAILURE:
                   log('\tcrit failure')
                   criticalFailures++;
@@ -172,9 +175,6 @@ client.on("messageCreate", function(message) {
                 case SKILL_CHECK_RESULTS.SUCCESS:
                   log('\tsuccess')
                   successes++;
-                  break;
-                case SKILL_CHECK_RESULTS.NO_SUCCESS:
-                  log('\tno success, crit fail canceled by high threshold');
                   break;
                 default:
                   log('\tfailure')

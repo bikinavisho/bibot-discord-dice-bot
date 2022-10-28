@@ -58,6 +58,7 @@ function parseCritFailureString(criticalFailures) {
 const SKILL_CHECK_RESULTS = {
   CRITICAL_SUCCESS: 'CRITICAL_SUCCESS',
   SUCCESS: 'SUCCESS',
+  NO_SUCCESS: 'NO_SUCCESS',
   CRITICAL_FAILURE: 'CRITICAL_FAILURE'
 };
 
@@ -70,6 +71,9 @@ function skillCheck(num, threshold, skip150 = false) {
   }
   if (num <= 10) {
     return SKILL_CHECK_RESULTS.CRITICAL_SUCCESS;
+  }
+  if (threshold <= 100 && threshold <= 150 && num >= 90) {
+    return SKILL_CHECK_RESULTS.NO_SUCCESS;
   }
   if (num >= 90) {
     return SKILL_CHECK_RESULTS.CRITICAL_FAILURE;

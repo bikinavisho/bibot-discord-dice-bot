@@ -173,6 +173,9 @@ client.on("messageCreate", function(message) {
                   log('\tsuccess')
                   successes++;
                   break;
+                case SKILL_CHECK_RESULTS.NO_SUCCESS:
+                  log('\tno success, crit fail canceled by high threshold');
+                  break;
                 default:
                   log('\tfailure')
               }

@@ -1,10 +1,10 @@
 {
   "name": "discord-dice-bot",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A discord dice rolling bot!",
   "engines": {
     "node": "^16.0.0",
-    "npm": "^7.0.0"
+    "npm": "^8.0.0"
   },
   "main": "index.js",
   "scripts": {

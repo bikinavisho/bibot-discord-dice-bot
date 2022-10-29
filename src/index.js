@@ -254,7 +254,7 @@ client.on("messageCreate", function(message) {
               resultString += `\n\t*Note: Critical failures have been subtracted from the total number of successes.*`
             }
             if (cancelledFailures > 0) {
-              resultString += `\n\t*Note: Due to high threshold (100-150), ${cancelledFailures} critical failures have been negated.*`
+              resultString += `\n\t*Note: Due to high threshold (100-150), ${cancelledFailures} critical failure${cancelledFailures == 1 ? '' : 's'} have been negated.*`
             }
 
             // Send final message to channel

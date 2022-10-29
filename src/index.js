@@ -152,6 +152,7 @@ client.on("messageCreate", function(message) {
             let successes = 0;
             let criticalSuccesses = 0;  // less than 10 including 10
             let criticalFailures = 0;   // greater than 90, including 90
+            let cancelledFailures = 0;
 
             if (autoSuccesses > 0) {
               successes += autoSuccesses;
@@ -162,7 +163,8 @@ client.on("messageCreate", function(message) {
               // Add 50 to the first roll and evaluate result of comparison
               switch(skillCheck(num, criteria[i] + (i === 0 ? 50 : 0), skip150)) {
                 case SKILL_CHECK_RESULTS.NO_SUCCESS:
-                  log('\tno success, crit fail canceled by high threshold');
+                  cancelledFailures++;
+                  log('\tno success');
                   break;
                 case SKILL_CHECK_RESULTS.CRITICAL_FAILURE:
                   log('\tcrit failure')
@@ -250,6 +252,9 @@ client.on("messageCreate", function(message) {
             }
             if (criticalFailures > 0) {
               resultString += `\n\t*Note: Critical failures have been subtracted from the total number of successes.*`
+            }
+            if (cancelledFailures > 0) {
+              resultString += `\n\t*Note: Due to high threshold (100-150), ${cancelledFailures} critical failures have been negated.*`
             }
 
             // Send final message to channel

@@ -729,10 +729,47 @@ client.on("messageCreate", function(message) {
           log('ERROR: RANDOM ORG API HAS FAILED US. SEE ERROR: ', error)
         });
         break;
+      case 'mist': 
+      case 'mistborn':
+        let mistAttribute = Number(args[0]);
+        if (isNaN(mistAttribute)) {
+          log('attribute was not a number');
+          return;
+        }
+        log(`rolling ${mistAttribute}d6`);
+        let mistbornRandomConfig = {
+          min: 1, max: 6, n: mistAttribute
+        };
+        random.generateIntegers(mistbornRandomConfig).then((result) => {
+          let returnedNumbers = result.random.data;
+          let mistbornMessageString;
+          mistbornMessageString = `${userAlias} Rolled: \`${mistAttribute}d6\`: \`[${String(returnedNumbers).replace(/,/g, ', ')}]\` \n`;
+          // count up nudges and count up pairs 
+          let nudgeCount = _.filter(returnedNumbers, (n) => (n == 6)).length;
+          let fivePairs = _.filter(returnedNumbers, (n) => (n == 5)).length;
+          let fourPairs = _.filter(returnedNumbers, (n) => (n == 4)).length;
+          let threePairs = _.filter(returnedNumbers, (n) => (n == 3)).length;
+          let twoPairs = _.filter(returnedNumbers, (n) => (n == 2)).length;
+          let onePairs = _.filter(returnedNumbers, (n) => (n == 1)).length;
+          let highestPair;
+          if (fivePairs > 0) highestPair = 5;
+          else if (fourPairs > 0) highestPair = 4;
+          else if (threePairs > 0) highestPair = 3;
+          else if (twoPairs > 0) highestPair = 2;
+          else if (onePairs > 0) highestPair = 1;
+          mistbornMessageString = `Highest pair is \`${highestPair}\`, with \`${nudgeCount}\` nudge${nudgeCount == 1 ? '' : 's'}.`;
+          
+          message.reply(misbornMessageString);
+          
+        }).catch((error) => {
+          log('ERROR: RANDOM ORG API HAS FAILED US. SEE ERROR: ', error)
+        })
+        
+        break;
     }
     // end try
-  } catch (exep) {
-    log("AN EXCEPTION WAS THROWN DURING EXECUTION: ", exep)
+  } catch (superGodException) {
+    log("AN EXCEPTION WAS THROWN DURING EXECUTION: ", superGodException)
   }
 
   log('\n');

@@ -750,13 +750,19 @@ client.on("messageCreate", function(message) {
           let threePairs = _.filter(returnedNumbers, (n) => (n == 3)).length;
           let twoPairs = _.filter(returnedNumbers, (n) => (n == 2)).length;
           let onePairs = _.filter(returnedNumbers, (n) => (n == 1)).length;
+          // determine the highest pair
           let highestPair;
           if (fivePairs > 1) highestPair = 5;
           else if (fourPairs > 1) highestPair = 4;
           else if (threePairs > 1) highestPair = 3;
           else if (twoPairs > 1) highestPair = 2;
           else if (onePairs > 1) highestPair = 1;
-          mistbornMessageString += `Highest pair is \`${highestPair}\`, with \`${nudgeCount}\` nudge${nudgeCount == 1 ? '' : 's'}.`;
+          // print the output 
+          if (highestPair) {
+            mistbornMessageString += `Highest pair is \`${highestPair}\`, with \`${nudgeCount}\` nudge${nudgeCount == 1 ? '' : 's'}.`;
+          } else {
+            mistbornMessageString += `You failed, with \`${nudgeCount}\` nudge${nudgeCount == 1 ? '' : 's'}.`;
+          }
           
           replyToUserWithoutMention(message, mistbornMessageString);
           

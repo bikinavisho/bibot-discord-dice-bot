@@ -751,14 +751,14 @@ client.on("messageCreate", function(message) {
           let twoPairs = _.filter(returnedNumbers, (n) => (n == 2)).length;
           let onePairs = _.filter(returnedNumbers, (n) => (n == 1)).length;
           let highestPair;
-          if (fivePairs > 0) highestPair = 5;
-          else if (fourPairs > 0) highestPair = 4;
-          else if (threePairs > 0) highestPair = 3;
-          else if (twoPairs > 0) highestPair = 2;
-          else if (onePairs > 0) highestPair = 1;
+          if (fivePairs > 1) highestPair = 5;
+          else if (fourPairs > 1) highestPair = 4;
+          else if (threePairs > 1) highestPair = 3;
+          else if (twoPairs > 1) highestPair = 2;
+          else if (onePairs > 1) highestPair = 1;
           mistbornMessageString += `Highest pair is \`${highestPair}\`, with \`${nudgeCount}\` nudge${nudgeCount == 1 ? '' : 's'}.`;
           
-          message.reply(mistbornMessageString);
+          replyToUserWithoutMention(message, mistbornMessageString);
           
         }).catch((error) => {
           log('ERROR: RANDOM ORG API HAS FAILED US. SEE ERROR: ', error)

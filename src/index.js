@@ -757,7 +757,10 @@ client.on("messageCreate", function(message) {
           let returnedNumbers = result.random.data;
           let mistbornMessageString = `${userAlias} Rolled: \`${mistAttribute}d6\`: \`[${String(returnedNumbers.sort()).replace(/,/g, ', ')}]\` \n`;
           // count up nudges and count up pairs 
-          let nudgeCount = _.filter(returnedNumbers, (n) => (n == 6)).length + extraNudges;
+          let nudgeCount = _.filter(returnedNumbers, (n) => (n == 6)).length;
+          if (extraNudges) {
+            nudgeCount += extraNudges;
+          }
           let fivePairs = _.filter(returnedNumbers, (n) => (n == 5)).length;
           let fourPairs = _.filter(returnedNumbers, (n) => (n == 4)).length;
           let threePairs = _.filter(returnedNumbers, (n) => (n == 3)).length;

@@ -742,8 +742,7 @@ client.on("messageCreate", function(message) {
         };
         random.generateIntegers(mistbornRandomConfig).then((result) => {
           let returnedNumbers = result.random.data;
-          let mistbornMessageString;
-          mistbornMessageString = `${userAlias} Rolled: \`${mistAttribute}d6\`: \`[${String(returnedNumbers).replace(/,/g, ', ')}]\` \n`;
+          let mistbornMessageString = `${userAlias} Rolled: \`${mistAttribute}d6\`: \`[${String(returnedNumbers).replace(/,/g, ', ')}]\` \n`;
           // count up nudges and count up pairs 
           let nudgeCount = _.filter(returnedNumbers, (n) => (n == 6)).length;
           let fivePairs = _.filter(returnedNumbers, (n) => (n == 5)).length;
@@ -757,9 +756,9 @@ client.on("messageCreate", function(message) {
           else if (threePairs > 0) highestPair = 3;
           else if (twoPairs > 0) highestPair = 2;
           else if (onePairs > 0) highestPair = 1;
-          mistbornMessageString = `Highest pair is \`${highestPair}\`, with \`${nudgeCount}\` nudge${nudgeCount == 1 ? '' : 's'}.`;
+          mistbornMessageString += `Highest pair is \`${highestPair}\`, with \`${nudgeCount}\` nudge${nudgeCount == 1 ? '' : 's'}.`;
           
-          message.reply(misbornMessageString);
+          message.reply(mistbornMessageString);
           
         }).catch((error) => {
           log('ERROR: RANDOM ORG API HAS FAILED US. SEE ERROR: ', error)

@@ -745,6 +745,11 @@ client.on("messageCreate", function(message) {
           mistAttribute = 2;
           isHarder = true;
         }
+        let extraNudges;
+        if (mistAttribute > 10) {
+          extraNudges = mistAttribute - 10;
+          mistAttribute = 10;
+        }
         let mistbornRandomConfig = {
           min: 1, max: 6, n: mistAttribute
         };
@@ -752,7 +757,7 @@ client.on("messageCreate", function(message) {
           let returnedNumbers = result.random.data;
           let mistbornMessageString = `${userAlias} Rolled: \`${mistAttribute}d6\`: \`[${String(returnedNumbers.sort()).replace(/,/g, ', ')}]\` \n`;
           // count up nudges and count up pairs 
-          let nudgeCount = _.filter(returnedNumbers, (n) => (n == 6)).length;
+          let nudgeCount = _.filter(returnedNumbers, (n) => (n == 6)).length + extraNudges;
           let fivePairs = _.filter(returnedNumbers, (n) => (n == 5)).length;
           let fourPairs = _.filter(returnedNumbers, (n) => (n == 4)).length;
           let threePairs = _.filter(returnedNumbers, (n) => (n == 3)).length;
@@ -767,12 +772,15 @@ client.on("messageCreate", function(message) {
           else if (onePairs > 1) highestPair = 1;
           // print the output 
           if (highestPair) {
-            mistbornMessageString += `Highest pair is \`${highestPair}\`, with \`${nudgeCount}\` nudge${nudgeCount == 1 ? '' : 's'}.`;
+            mistbornMessageString += `Highest pair is \`${highestPair}\`, with \`${nudgeCount}\` nudge${nudgeCount == 1 ? '' : 's'}.\n`;
           } else {
-            mistbornMessageString += `You failed, with \`${nudgeCount}\` nudge${nudgeCount == 1 ? '' : 's'}.`;
+            mistbornMessageString += `You failed, with \`${nudgeCount}\` nudge${nudgeCount == 1 ? '' : 's'}.\n`;
           }
           if (isHarder) {
-            mistbornMessageString += 'Since your attribute was 1, an additional dice has been added at the expense of increased difficulty.';
+            mistbornMessageString += 'Since your attribute was 1, an additional dice has been added at the expense of increased difficulty.\n';
+          }
+          if (extraNudges) {
+            mistbornMessageString += `\`${extraNudges}\` extra nudges have been provided since >10 attribute was input.`;
           }
           
           replyToUserWithoutMention(message, mistbornMessageString);

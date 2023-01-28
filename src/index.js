@@ -740,6 +740,11 @@ client.on("messageCreate", function(message) {
           return;
         }
         log(`rolling ${mistAttribute}d6`);
+        let isHarder = false;
+        if (mistAttribute == 1) {
+          mistAttribute = 2;
+          isHarder = true;
+        }
         let mistbornRandomConfig = {
           min: 1, max: 6, n: mistAttribute
         };
@@ -765,6 +770,9 @@ client.on("messageCreate", function(message) {
             mistbornMessageString += `Highest pair is \`${highestPair}\`, with \`${nudgeCount}\` nudge${nudgeCount == 1 ? '' : 's'}.`;
           } else {
             mistbornMessageString += `You failed, with \`${nudgeCount}\` nudge${nudgeCount == 1 ? '' : 's'}.`;
+          }
+          if (isHarder) {
+            mistbornMessageString += 'Since your attribute was 1, an additional dice has been added at the expense of increased difficulty.';
           }
           
           replyToUserWithoutMention(message, mistbornMessageString);

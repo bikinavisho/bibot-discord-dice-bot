@@ -742,7 +742,7 @@ client.on("messageCreate", function(message) {
         };
         random.generateIntegers(mistbornRandomConfig).then((result) => {
           let returnedNumbers = result.random.data;
-          let mistbornMessageString = `${userAlias} Rolled: \`${mistAttribute}d6\`: \`[${String(returnedNumbers).replace(/,/g, ', ')}]\` \n`;
+          let mistbornMessageString = `${userAlias} Rolled: \`${mistAttribute}d6\`: \`[${String(returnedNumbers.sort()).replace(/,/g, ', ')}]\` \n`;
           // count up nudges and count up pairs 
           let nudgeCount = _.filter(returnedNumbers, (n) => (n == 6)).length;
           let fivePairs = _.filter(returnedNumbers, (n) => (n == 5)).length;

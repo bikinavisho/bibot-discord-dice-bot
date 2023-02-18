@@ -816,7 +816,7 @@ client.on("messageCreate", function(message) {
           // translate 1-52 into 0-51 which is the array index of our deck of cards
           let cardsDrawn = cardsDrawnRaw.map((number) => (DECK_OF_CARDS[Number(number) - 1]));
           // format message for the user ~ 
-          let cardsDrawnMessage = `${userAlias} drew ${numberOfCards} cards: ` + cardsDrawn.toString();
+          let cardsDrawnMessage = `${userAlias} drew ${numberOfCards} card${numberOfCards == 1 ? '' : 's'}: ` + cardsDrawn.toString();
           // send ~ 
           replyToUserWithoutMention(message, cardsDrawnMessage);
         }).catch((error) => {

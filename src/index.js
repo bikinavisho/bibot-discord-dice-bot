@@ -3,6 +3,7 @@ const RandomOrg = require('random-org');
 const _ = require('lodash');
 const {log, cleanupLogDirectory} = require('./logging-util.js');
 const {getCriteria, parseSuccessesString, parseCritSuccessString, parseCritFailureString, skillCheck, SKILL_CHECK_RESULTS} = require('./trinity-functions.js');
+const {DECK_OF_CARDS} = require('./card-functions');
 
 // enable the use of environemnt files (.env)
 require('dotenv').config();
@@ -57,6 +58,7 @@ client.on("messageCreate", function(message) {
           .setTitle('Bibot\'s Commands')
           .setDescription('Commands available:\n '+
           `\`${prefix}roll [n]d[N]\` - will roll the specified number of di, with N sides, prints sum\n`+
+          `\`${prefix}draw [n]\` - will draw n number of cards from a single deck of cards   \n` +
           `\`${prefix}gurps [n]\` - will roll 3d6 and check the result against the number you specify\n`+
           `\`${prefix}pbta [n]\` - will roll 2d6+[n], with a partial success on 7+ and critical success on 10+ (note: n is optional)\n`+
           `\`${prefix}motw [n]\` - will roll 2d6+[n], with a partial success on 7+ and critical success on 10+ (note: n is optional)\n`+
@@ -86,8 +88,11 @@ client.on("messageCreate", function(message) {
         if (_.includes(userAlias, "Steven")) {
           message.channel.send("Are you happy now Steven?");
         }
+        if (_.includes(userAlias, "Steve")) {
+          message.channel.send("Are you happy now Steve?");
+        }
         if (message?.author?.username === "aDiCt#6430") {
-          message.channel.send("Are you happy n   ow Steve?");
+          message.channel.send("Are you happy now Steve?");
         }
         break;
       case 'rip':
@@ -734,64 +739,90 @@ client.on("messageCreate", function(message) {
       case 'mist': 
       case 'mistborn':
       case 'misty':
-        let mistAttribute = Number(args[0]);
-        if (isNaN(mistAttribute)) {
-          log('attribute was not a number');
+        {
+          let mistAttribute = Number(args[0]);
+          if (isNaN(mistAttribute)) {
+            log('attribute was not a number');
+            return;
+          }
+          log(`rolling ${mistAttribute}d6`);
+          let isHarder = false;
+          if (mistAttribute == 1) {
+            mistAttribute = 2;
+            isHarder = true;
+          }
+          let extraNudges;
+          if (mistAttribute > 10) {
+            extraNudges = mistAttribute - 10;
+            mistAttribute = 10;
+          }
+          let mistbornRandomConfig = {
+            min: 1, max: 6, n: mistAttribute
+          };
+          random.generateIntegers(mistbornRandomConfig).then((result) => {
+            let returnedNumbers = result.random.data;
+            let mistbornMessageString = `${userAlias} Rolled: \`${mistAttribute}d6\`: \`[${String(returnedNumbers.sort()).replace(/,/g, ', ')}]\` \n`;
+            // count up nudges and count up pairs 
+            let nudgeCount = _.filter(returnedNumbers, (n) => (n == 6)).length;
+            if (extraNudges) {
+              nudgeCount += extraNudges;
+            }
+            let fivePairs = _.filter(returnedNumbers, (n) => (n == 5)).length;
+            let fourPairs = _.filter(returnedNumbers, (n) => (n == 4)).length;
+            let threePairs = _.filter(returnedNumbers, (n) => (n == 3)).length;
+            let twoPairs = _.filter(returnedNumbers, (n) => (n == 2)).length;
+            let onePairs = _.filter(returnedNumbers, (n) => (n == 1)).length;
+            // determine the highest pair
+            let highestPair;
+            if (fivePairs > 1) highestPair = 5;
+            else if (fourPairs > 1) highestPair = 4;
+            else if (threePairs > 1) highestPair = 3;
+            else if (twoPairs > 1) highestPair = 2;
+            else if (onePairs > 1) highestPair = 1;
+            // print the output 
+            if (highestPair) {
+              mistbornMessageString += `Highest pair is \`${highestPair}\`, with \`${nudgeCount}\` nudge${nudgeCount == 1 ? '' : 's'}.\n`;
+            } else {
+              mistbornMessageString += `You failed, with \`${nudgeCount}\` nudge${nudgeCount == 1 ? '' : 's'}.\n`;
+            }
+            if (isHarder) {
+              mistbornMessageString += 'Since your attribute was 1, an additional dice has been added at the expense of increased difficulty.\n';
+            }
+            if (extraNudges) {
+              mistbornMessageString += `\`${extraNudges}\` extra nudges have been provided since >10 attribute was input.`;
+            }
+            
+            replyToUserWithoutMention(message, mistbornMessageString);
+            
+          }).catch((error) => {
+            log('ERROR: RANDOM ORG API HAS FAILED US. SEE ERROR: ', error)
+          })
+        }
+        
+        break;
+      case 'draw': {
+        let numberOfCards = Number(args[0]);
+        if (isNaN(numberOfCards)) {
+          log('numberOfCards input was not a number');
           return;
         }
-        log(`rolling ${mistAttribute}d6`);
-        let isHarder = false;
-        if (mistAttribute == 1) {
-          mistAttribute = 2;
-          isHarder = true;
-        }
-        let extraNudges;
-        if (mistAttribute > 10) {
-          extraNudges = mistAttribute - 10;
-          mistAttribute = 10;
-        }
-        let mistbornRandomConfig = {
-          min: 1, max: 6, n: mistAttribute
+        log(`drawing ${numberOfCards} cards`);
+        let drawCardsConfig = {
+          min: 1, max: 52, n: 1, length: numberOfCards, replacement: false
         };
-        random.generateIntegers(mistbornRandomConfig).then((result) => {
-          let returnedNumbers = result.random.data;
-          let mistbornMessageString = `${userAlias} Rolled: \`${mistAttribute}d6\`: \`[${String(returnedNumbers.sort()).replace(/,/g, ', ')}]\` \n`;
-          // count up nudges and count up pairs 
-          let nudgeCount = _.filter(returnedNumbers, (n) => (n == 6)).length;
-          if (extraNudges) {
-            nudgeCount += extraNudges;
-          }
-          let fivePairs = _.filter(returnedNumbers, (n) => (n == 5)).length;
-          let fourPairs = _.filter(returnedNumbers, (n) => (n == 4)).length;
-          let threePairs = _.filter(returnedNumbers, (n) => (n == 3)).length;
-          let twoPairs = _.filter(returnedNumbers, (n) => (n == 2)).length;
-          let onePairs = _.filter(returnedNumbers, (n) => (n == 1)).length;
-          // determine the highest pair
-          let highestPair;
-          if (fivePairs > 1) highestPair = 5;
-          else if (fourPairs > 1) highestPair = 4;
-          else if (threePairs > 1) highestPair = 3;
-          else if (twoPairs > 1) highestPair = 2;
-          else if (onePairs > 1) highestPair = 1;
-          // print the output 
-          if (highestPair) {
-            mistbornMessageString += `Highest pair is \`${highestPair}\`, with \`${nudgeCount}\` nudge${nudgeCount == 1 ? '' : 's'}.\n`;
-          } else {
-            mistbornMessageString += `You failed, with \`${nudgeCount}\` nudge${nudgeCount == 1 ? '' : 's'}.\n`;
-          }
-          if (isHarder) {
-            mistbornMessageString += 'Since your attribute was 1, an additional dice has been added at the expense of increased difficulty.\n';
-          }
-          if (extraNudges) {
-            mistbornMessageString += `\`${extraNudges}\` extra nudges have been provided since >10 attribute was input.`;
-          }
-          
-          replyToUserWithoutMention(message, mistbornMessageString);
-          
+        random.generateIntegerSequences(drawCardsConfig).then((result) => {
+          // expected result: [1, 2, 3...] with length of length/numberOfCards
+          let cardsDrawnRaw = result?.random?.data;
+          // translate 1-52 into 0-51 which is the array index of our deck of cards
+          let cardsDrawn = cardsDrawnRaw.map((number) => (DECK_OF_CARDS[Number(number) - 1]));
+          // format message for the user ~ 
+          let cardsDrawnMessage = `${userAlias} drew ${numberOfCards} cards: ` + cardsDrawn.toString();
+          // send ~ 
+          replyToUserWithoutMention(message, cardsDrawnMessage);
         }).catch((error) => {
-          log('ERROR: RANDOM ORG API HAS FAILED US. SEE ERROR: ', error)
-        })
-        
+          log('ERROR: RANDOM ORG API HAS FAILED US. SEE ERROR: ', error);
+        });
+      }
         break;
     }
     // end try

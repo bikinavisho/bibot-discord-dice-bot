@@ -811,8 +811,8 @@ client.on("messageCreate", function(message) {
           min: 1, max: 52, n: 1, length: numberOfCards, replacement: false
         };
         random.generateIntegerSequences(drawCardsConfig).then((result) => {
-          // expected result: [1, 2, 3...] with length of length/numberOfCards
-          let cardsDrawnRaw = result?.random?.data;
+          // expected result: [[1, 2, 3...]] with length of length/numberOfCards
+          let cardsDrawnRaw = result?.random?.data[0];
           log('randomOrg results: ', cardsDrawnRaw);
           // translate 1-52 into 0-51 which is the array index of our deck of cards
           let cardsDrawn = cardsDrawnRaw.map((number) => (DECK_OF_CARDS[Number(number) - 1]));

@@ -818,7 +818,7 @@ client.on("messageCreate", function(message) {
           let cardsDrawn = cardsDrawnRaw.map((number) => (DECK_OF_CARDS[Number(number) - 1]));
           log('cards drawn: ', cardsDrawn);
           // format message for the user ~ 
-          let cardsDrawnMessage = `${userAlias} drew ${numberOfCards} card${numberOfCards == 1 ? '' : 's'}: ` + cardsDrawn.toString();
+          let cardsDrawnMessage = `${userAlias} drew ${numberOfCards} card${numberOfCards == 1 ? '' : 's'}: \`[${String(cardsDrawn).replace(/,/g, ', ')}]\``;
           // send ~ 
           replyToUserWithoutMention(message, cardsDrawnMessage);
         }).catch((error) => {

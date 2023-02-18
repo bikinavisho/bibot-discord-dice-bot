@@ -813,8 +813,10 @@ client.on("messageCreate", function(message) {
         random.generateIntegerSequences(drawCardsConfig).then((result) => {
           // expected result: [1, 2, 3...] with length of length/numberOfCards
           let cardsDrawnRaw = result?.random?.data;
+          log('randomOrg results: ', cardsDrawnRaw);
           // translate 1-52 into 0-51 which is the array index of our deck of cards
           let cardsDrawn = cardsDrawnRaw.map((number) => (DECK_OF_CARDS[Number(number) - 1]));
+          log('cards drawn: ', cardsDrawn);
           // format message for the user ~ 
           let cardsDrawnMessage = `${userAlias} drew ${numberOfCards} card${numberOfCards == 1 ? '' : 's'}: ` + cardsDrawn.toString();
           // send ~ 

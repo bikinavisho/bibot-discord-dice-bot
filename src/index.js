@@ -807,8 +807,9 @@ client.on("messageCreate", function(message) {
           return;
         }
         log(`drawing ${numberOfCards} cards`);
+        // 54 cards including joker
         let drawCardsConfig = {
-          min: 1, max: 52, n: 1, length: numberOfCards, replacement: false
+          min: 1, max: 54, n: 1, length: numberOfCards, replacement: false
         };
         random.generateIntegerSequences(drawCardsConfig).then((result) => {
           // expected result: [[1, 2, 3...]] with length of length/numberOfCards

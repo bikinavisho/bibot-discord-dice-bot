@@ -64,8 +64,8 @@ client.on("messageCreate", function(message) {
           `\`${prefix}motw [n]\` - will roll 2d6+[n], with a partial success on 7+ and critical success on 10+ (note: n is optional)\n`+
           `\`${prefix}fate [n]\` - will roll 4 fate dice and add [n] to the result (note: n is optional)\n` +
           `\`${prefix}fate [n] = [y]\` - will roll 4 fate dice and add [n] to the result, then compare the total to given [y]\n` +
-          `\`${prefix}mist [n]\` - will roll [n]d6 according to mistborn rules` + 
-          `\`${prefix}mistborn [n]\` - will roll [n]d6 according to mistborn rules` + 
+          `\`${prefix}mist [n]\` - will roll [n]d6 according to mistborn rules\n` + 
+          `\`${prefix}mistborn [n]\` - will roll [n]d6 according to mistborn rules\n` + 
           `\`${prefix}raccoon [eyes/hands/feet] [n]\` - will roll n d6 according to the correponding raccoon stat and tell you the result of the highest dice rolled.\n` +
           `\`${prefix}roll R[rank] [modifiers, comma delineated]\` - will roll the number of dice corresponding to the rank given. If using the comma delineated modifiers, ensure that the number of modifiers given equals the number of ranks/dice being rolled.\n`+
           `\`${prefix}bulk [n]R[rank] [modifiers, comma dileneated]\` - will roll the given skill check [n] times`)

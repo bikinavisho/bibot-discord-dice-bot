@@ -3,6 +3,7 @@ const RandomOrg = require('random-org');
 const _ = require('lodash');
 const {log, cleanupLogDirectory} = require('./logging-util.js');
 const {getCriteria, parseSuccessesString, parseCritSuccessString, parseCritFailureString, skillCheck, SKILL_CHECK_RESULTS} = require('./trinity-functions.js');
+const {DECK_OF_CARDS} = require('./card-functions');
 
 // enable the use of environemnt files (.env)
 require('dotenv').config();
@@ -58,11 +59,14 @@ client.on("messageCreate", function(message) {
           .setTitle('Bibot\'s Commands')
           .setDescription('Commands available:\n '+
           `\`${prefix}roll [n]d[N]\` - will roll the specified number of di, with N sides, prints sum\n`+
+          `\`${prefix}draw [n]\` - will draw n number of cards from a single deck of cards   \n` +
           `\`${prefix}gurps [n]\` - will roll 3d6 and check the result against the number you specify\n`+
           `\`${prefix}pbta [n]\` - will roll 2d6+[n], with a partial success on 7+ and critical success on 10+ (note: n is optional)\n`+
           `\`${prefix}motw [n]\` - will roll 2d6+[n], with a partial success on 7+ and critical success on 10+ (note: n is optional)\n`+
           `\`${prefix}fate [n]\` - will roll 4 fate dice and add [n] to the result (note: n is optional)\n` +
           `\`${prefix}fate [n] = [y]\` - will roll 4 fate dice and add [n] to the result, then compare the total to given [y]\n` +
+          `\`${prefix}mist [n]\` - will roll [n]d6 according to mistborn rules\n` + 
+          `\`${prefix}mistborn [n]\` - will roll [n]d6 according to mistborn rules\n` + 
           `\`${prefix}raccoon [eyes/hands/feet] [n]\` - will roll n d6 according to the correponding raccoon stat and tell you the result of the highest dice rolled.\n` +
           `\`${prefix}roll R[rank] [modifiers, comma delineated]\` - will roll the number of dice corresponding to the rank given. If using the comma delineated modifiers, ensure that the number of modifiers given equals the number of ranks/dice being rolled.\n`+
           `\`${prefix}bulk [n]R[rank] [modifiers, comma dileneated]\` - will roll the given skill check [n] times`)
@@ -79,6 +83,18 @@ client.on("messageCreate", function(message) {
         const timeTaken = Date.now() - message.createdTimestamp;
         // message.reply  @s the user who initiated the command
         message.reply(`Pong! This message had a latency of ${timeTaken}ms.`);
+        break;
+      case 'bing':
+        message.reply('bong');
+        if (_.includes(userAlias, "Steven")) {
+          message.channel.send("Are you happy now Steven?");
+        }
+        if (_.includes(userAlias, "Steve")) {
+          message.channel.send("Are you happy now Steve?");
+        }
+        if (message?.author?.username === "aDiCt#6430") {
+          message.channel.send("Are you happy now Steve?");
+        }
         break;
       case 'rip':
         replyToUserWithoutMention(message, '<:rip:752693741440991323>');
@@ -144,6 +160,7 @@ client.on("messageCreate", function(message) {
             let successes = 0;
             let criticalSuccesses = 0;  // less than 10 including 10
             let criticalFailures = 0;   // greater than 90, including 90
+            let cancelledFailures = 0;
 
             if (autoSuccesses > 0) {
               successes += autoSuccesses;
@@ -153,6 +170,10 @@ client.on("messageCreate", function(message) {
               log(`comparing ${num} with ${criteria[i]}`)
               // Add 50 to the first roll and evaluate result of comparison
               switch(skillCheck(num, criteria[i] + (i === 0 ? 50 : 0), skip150)) {
+                case SKILL_CHECK_RESULTS.NO_SUCCESS:
+                  cancelledFailures++;
+                  log('\tno success');
+                  break;
                 case SKILL_CHECK_RESULTS.CRITICAL_FAILURE:
                   log('\tcrit failure')
                   criticalFailures++;
@@ -240,6 +261,9 @@ client.on("messageCreate", function(message) {
             if (criticalFailures > 0) {
               resultString += `\n\t*Note: Critical failures have been subtracted from the total number of successes.*`
             }
+            if (cancelledFailures > 0) {
+              resultString += `\n\t*Note: Due to high threshold (100-150), ${cancelledFailures} critical failure${cancelledFailures == 1 ? '' : 's'} ${cancelledFailures == 1 ? 'has' : 'have'} been negated.*`
+            }
 
             // Send final message to channel
             message.channel.send(`${userAlias} rolled... ${rolledNumberString} Result: ${resultString}`)
@@ -296,7 +320,7 @@ client.on("messageCreate", function(message) {
             replyToUserWithoutMention(message, 'Please select a number of dice smaller than 10,000.');
             break;
           }
-          if (numOfDice < 1) {
+          if (numOfDice < 0) {
             replyToUserWithoutMention(message, 'Please select a positive number of dice.');
             break;
           }
@@ -352,10 +376,8 @@ client.on("messageCreate", function(message) {
             //TODO: come up with a better solution to exceeding Discord's max character limit
             if (messageContent.length > 2000) {
               let appendToEndString = '...`]' + messageContent.slice(messageContent.indexOf(']`')+2)
-              console.log('appendToEndString: ', appendToEndString);
-              messageContent = messageContent.slice(0, Math.abs(2000 - appendToEndString.length));
+              messageContent = messageContent.slice(0, (2000 - appendToEndString.length));
               messageContent += appendToEndString;
-              console.log('messageContent.length: ', messageContent.length)
               log('message has been truncated due to excessive length');
             }
             replyToUserWithoutMention(message, messageContent);
@@ -715,10 +737,101 @@ client.on("messageCreate", function(message) {
           log('ERROR: RANDOM ORG API HAS FAILED US. SEE ERROR: ', error)
         });
         break;
+      case 'mist': 
+      case 'mistborn':
+      case 'misty':
+        {
+          let mistAttribute = Number(args[0]);
+          if (isNaN(mistAttribute)) {
+            log('attribute was not a number');
+            return;
+          }
+          log(`rolling ${mistAttribute}d6`);
+          let isHarder = false;
+          if (mistAttribute == 1) {
+            mistAttribute = 2;
+            isHarder = true;
+          }
+          let extraNudges;
+          if (mistAttribute > 10) {
+            extraNudges = mistAttribute - 10;
+            mistAttribute = 10;
+          }
+          let mistbornRandomConfig = {
+            min: 1, max: 6, n: mistAttribute
+          };
+          random.generateIntegers(mistbornRandomConfig).then((result) => {
+            let returnedNumbers = result.random.data;
+            let mistbornMessageString = `${userAlias} Rolled: \`${mistAttribute}d6\`: \`[${String(returnedNumbers.sort()).replace(/,/g, ', ')}]\` \n`;
+            // count up nudges and count up pairs 
+            let nudgeCount = _.filter(returnedNumbers, (n) => (n == 6)).length;
+            if (extraNudges) {
+              nudgeCount += extraNudges;
+            }
+            let fivePairs = _.filter(returnedNumbers, (n) => (n == 5)).length;
+            let fourPairs = _.filter(returnedNumbers, (n) => (n == 4)).length;
+            let threePairs = _.filter(returnedNumbers, (n) => (n == 3)).length;
+            let twoPairs = _.filter(returnedNumbers, (n) => (n == 2)).length;
+            let onePairs = _.filter(returnedNumbers, (n) => (n == 1)).length;
+            // determine the highest pair
+            let highestPair;
+            if (fivePairs > 1) highestPair = 5;
+            else if (fourPairs > 1) highestPair = 4;
+            else if (threePairs > 1) highestPair = 3;
+            else if (twoPairs > 1) highestPair = 2;
+            else if (onePairs > 1) highestPair = 1;
+            // print the output 
+            if (highestPair) {
+              mistbornMessageString += `Highest pair is \`${highestPair}\`, with \`${nudgeCount}\` nudge${nudgeCount == 1 ? '' : 's'}.\n`;
+            } else {
+              mistbornMessageString += `You failed, with \`${nudgeCount}\` nudge${nudgeCount == 1 ? '' : 's'}.\n`;
+            }
+            if (isHarder) {
+              mistbornMessageString += 'Since your attribute was 1, an additional dice has been added at the expense of increased difficulty.\n';
+            }
+            if (extraNudges) {
+              mistbornMessageString += `\`${extraNudges}\` extra nudges have been provided since >10 attribute was input.`;
+            }
+            
+            replyToUserWithoutMention(message, mistbornMessageString);
+            
+          }).catch((error) => {
+            log('ERROR: RANDOM ORG API HAS FAILED US. SEE ERROR: ', error)
+          })
+        }
+        
+        break;
+      case 'draw': {
+        let numberOfCards = Number(args[0]);
+        if (isNaN(numberOfCards)) {
+          log('numberOfCards input was not a number');
+          return;
+        }
+        log(`drawing ${numberOfCards} cards`);
+        // 54 cards including joker
+        let drawCardsConfig = {
+          min: 1, max: 54, n: 1, length: numberOfCards, replacement: false
+        };
+        random.generateIntegerSequences(drawCardsConfig).then((result) => {
+          // expected result: [[1, 2, 3...]] with length of length/numberOfCards
+          let cardsDrawnRaw = result?.random?.data[0];
+          log('randomOrg results: ', cardsDrawnRaw);
+          // translate 1-52 into 0-51 which is the array index of our deck of cards
+          let cardsDrawn = cardsDrawnRaw.map((number) => (DECK_OF_CARDS[Number(number) - 1]));
+          log('cards drawn: ', cardsDrawn);
+          // format message for the user ~ 
+          let cardsDrawnMessage = `${userAlias} drew ${numberOfCards} card${numberOfCards == 1 ? '' : 's'}: \`[${String(cardsDrawn).replace(/,/g, ', ')}]\``;
+          // send ~ 
+          replyToUserWithoutMention(message, cardsDrawnMessage);
+        }).catch((error) => {
+          log('ERROR: RANDOM ORG API HAS FAILED US. SEE ERROR: ', error);
+        });
+      }
+        break;
     }
     // end try
-  } catch (exep) {
-    log("AN EXCEPTION WAS THROWN DURING EXECUTION: ", exep)
+  } catch (superGodException) {
+    log("AN EXCEPTION WAS THROWN DURING EXECUTION: ", superGodException)
   }
 
   log('\n');

@@ -40,10 +40,10 @@ function cleanupLogDirectory() {
     });
 
     setTimeout(() => {
-      log('\n----------------------------------')
-      log('LOGGING FILE CLEANUP')
-      log(`${filesDeleted} files deleted.`)
-      log('----------------------------------\n')
+      log('\n-------------------------------------')
+      log('\tLOGGING FILE CLEANUP')
+      log(`\t${filesDeleted} files deleted.`)
+      log('-------------------------------------\n')
     }, 2*1000)
   });
 }

@@ -1,15 +1,16 @@
 const DECK_OF_CARDS = [
-    '♤A', '♤2', '♤3', '♤4', '♤5', '♤6', '♤7', '♤8', '♤9', '♤10', '♤J', '♤Q', '♤K', 
-    '♡A', '♡2', '♡3', '♡4', '♡5', '♡6', '♡7', '♡8', '♡9', '♡10', '♡J', '♡Q', '♡K', 
-    '♢A', '♢2', '♢3', '♢4', '♢5', '♢6', '♢7', '♢8', '♢9', '♢10', '♢J', '♢Q', '♢K', 
-    '♧A', '♧2', '♧3', '♧4', '♧5', '♧6', '♧7', '♧8', '♧9', '♧10', '♧J', '♧Q', '♧K',
-    '🃟Joker', '🂿Joker'
+    '♤A', '♤2', '♤3', '♤4', '♤5', '♤6', '♤7', '♤8', '♤9', '♤10', '♤J', '♤Q', '♤K',
+    '♡A', '♡2', '♡3', '♡4', '♡5', '♡6', '♡7', '♡8', '♡9', '♡10', '♡J', '♡Q', '♡K',
+    '♢A', '♢2', '♢3', '♢4', '♢5', '♢6', '♢7', '♢8', '♢9', '♢10', '♢J', '♢Q', '♢K',
+    '♧A', '♧2', '♧3', '♧4', '♧5', '♧6', '♧7', '♧8', '♧9', '♧10', '♧J', '♧Q', '♧K'
 ];
-// STRING.AT(0) for suit 
-// STRING.AT(1) for number 
+const JOKER_CARDS = ['🃟Joker', '🂿Joker'];
+// STRING.AT(0) for suit
+// STRING.AT(1) for number
 
 module.exports = {
-    DECK_OF_CARDS
+    DECK_OF_CARDS,
+    JOKER_CARDS
 };
 
 function createDeckOfCardsArray() {
@@ -23,7 +24,7 @@ function createDeckOfCardsArray() {
             case 1:
                 cardSuit = '♡';
                 break;
-            case 2: 
+            case 2:
                 cardSuit = '♢';
                 break;
             case 3:
@@ -37,19 +38,19 @@ function createDeckOfCardsArray() {
                 a.push(cardSuit + String(j + 1));
             } else {
                 switch (j) {
-                    case 10: 
+                    case 10:
                         a.push(cardSuit + 'J');
                         break;
-                    case 11: 
+                    case 11:
                         a.push(cardSuit + 'Q');
                         break;
-                    case 12: 
+                    case 12:
                         a.push(cardSuit + 'K');
                         break;
                 }
             }
         }
-        
+
     }
 
     return a;

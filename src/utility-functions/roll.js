@@ -1,0 +1,196 @@
+const _ = require('lodash');
+const RandomOrg = require('random-org');
+
+const {log} = require('../logging-util.js');
+const {getCriteria, parseSuccessesString, parseCritSuccessString, parseCritFailureString, skillCheck, SKILL_CHECK_RESULTS} = require('./trinity-functions.js')
+
+// enable the use of environemnt files (.env)
+require('dotenv').config();
+
+const random = new RandomOrg({ apiKey: process.env.RANDOM_API_KEY });
+
+
+async function executeNormalDiceRoll(interaction) {
+  const userAlias = interaction.member && interaction.member.nickname ? interaction.member.nickname : interaction.user.username;
+
+  let numberOfSides = interaction.options.getInteger('number_of_sides');
+  let numberOfDice = interaction.options.getInteger('number_of_dice') ?? 1;
+  let modifier = interaction.options.getInteger('modifier') ?? 0;
+
+  log(`rolling ${numberOfDice} d${numberOfSides} with a modifier of ${modifier}`);
+
+  let randomConfig = {
+    min: 1, max: numberOfSides, n: numberOfDice
+  };
+
+  await random.generateIntegers(randomConfig).then(async (result) => {
+    let returnedNumbers = result.random.data;
+    let messageContent;
+    if (modifier) {
+      messageContent = `${userAlias} rolled ${numberOfDice}d${numberOfSides}: \`[${String(returnedNumbers).replace(/,/g, ', ')}]\` + \`${modifier}\` \nTotal: \`${_.sum([...returnedNumbers, modifier])}\``;
+    } else {
+      messageContent = `${userAlias} rolled ${numberOfDice}d${numberOfSides}: \`[${String(returnedNumbers).replace(/,/g, ', ')}]\` \nTotal: \`${_.sum(returnedNumbers)}\``;
+    }
+
+    // discord will error out and not reply if you exceed the 2000 character limit
+    // truncate it so that the truncation is in the printing of the numbers,
+    // not the resulting total
+    if (messageContent.length > 2000) {
+      let appendToEndString = '...`]' + messageContent.slice(messageContent.indexOf(']`')+2)
+      messageContent = messageContent.slice(0, (2000 - appendToEndString.length));
+      messageContent += appendToEndString;
+      log('message has been truncated due to excessive length');
+    }
+
+    await interaction.reply(messageContent);
+  })
+}
+
+async function executeRankedSkillCheck(interaction) {
+  const userAlias = interaction.member && interaction.member.nickname ? interaction.member.nickname : interaction.user.username;
+
+  let rank = interaction.options.getInteger('rank');
+  let magnitude = interaction.options.getString('magnitude');
+  let autoSuccesses = interaction.options.getInteger('auto-successes') ?? 0;
+  let skip150 = interaction.options.getBoolean('skip150') ?? false;
+
+  log(`received parameters: {rank: ${rank}, magnitude: ${magnitude}, autoSuccesses: ${autoSuccesses}, skip150: ${skip150}}`)
+
+  // remove spaces from magnitude
+  magnitude = magnitude.replaceAll(' ', '');
+
+  //parse out the numbers inside the string of #,#,#
+  let criteria = getCriteria(magnitude, rank);
+  log(`Criteria parsed as: ${criteria}`);
+
+  let randomConfig = {
+    min: 1, max: 100, n: rank
+  };
+  await random.generateIntegers(randomConfig).then(async (result) => {
+    let returnedNumbers = result.random.data;
+    let successes = 0;
+    let criticalSuccesses = 0;  // less than 10 including 10
+    let criticalFailures = 0;   // greater than 90, including 90
+    let cancelledFailures = 0;
+
+    if (autoSuccesses > 0) {
+      successes += autoSuccesses;
+    }
+
+    returnedNumbers.forEach(async (num, i) => {
+      log(`comparing ${num} with ${criteria[i]}`)
+      // Add 50 to the first roll and evaluate result of comparison
+      switch(skillCheck(num, criteria[i] + (i === 0 ? 50 : 0), skip150)) {
+        case SKILL_CHECK_RESULTS.NO_SUCCESS:
+          cancelledFailures++;
+          log('\tno success');
+          break;
+        case SKILL_CHECK_RESULTS.CRITICAL_FAILURE:
+          log('\tcrit failure')
+          criticalFailures++;
+          break;
+        case SKILL_CHECK_RESULTS.CRITICAL_SUCCESS:
+          log('\tcrit success')
+          criticalSuccesses++;
+          successes++;
+        case SKILL_CHECK_RESULTS.SUCCESS:
+          log('\tsuccess')
+          successes++;
+          break;
+        default:
+          log('\tfailure')
+      }
+      // Handle super extraneous cases
+      if (num === 1) {
+        let successMessage = '';
+        let successMessages = [
+          'The Divine Roll!',
+          'Deus Vult!',
+          'By The Glory Of Sollaris!',
+          'Miraculous!',
+          'The Gods Smile Down Upon Us This Day!',
+          'The Blind King cannot stand in the Light of the Sun!',
+          'The Flesh Burneth Away, Purifying The Soul!',
+          `${userAlias} cleaves the sky, upturning mountains and draining the sea!`,
+          'Flesh and Blood make way for the Divine Steel!',
+          'By The Power Of Grayskull!',
+          `${userAlias.toUpperCase()} HAS THE POWER!!`,
+          `${userAlias} somehow managed to succeed, despite their numerous inequities.`,
+          `By some stroke of Luck or Fate, ${userAlias} was successful!`,
+          `${userAlias}'s success was definitely intentional, and in no way an accident.`,
+          `Despite the quality of ${userAlias}\'s character, and all efforts to the contrary, ${userAlias} managed to succeed.`,
+          'By The Divine Light!',
+          'A dragon\'s hoarde awaits!',
+          'Onwards to Victory!',
+          'Ohhhh yeaaaahhhh'
+        ];
+        // Randomly select one of the above success messages
+        let chosenIndex = _.random(0, successMessages.length-1)
+        // Add the success message to the final success message string
+        successMessage += successMessages[chosenIndex];
+        successMessage += `\n\t*${userAlias} rolled a \`${num}\`! Gain 1 talent.*`
+        await interaction.channel.send(successMessage).then((msg) => {
+          msg.react('🎉');
+        });
+
+      }
+      if (num === 100) {
+        let sadMessage = `<:rip:752693741440991323> Wah wah wah. ${userAlias} failed catastrophically! (You rolled a \`${num}\`.)`
+        await interaction.channel.send(sadMessage).then((msg) => {
+          msg.react('😢');
+        })
+      }
+    });
+    // subtract critical failures from the total number of successes
+    successes = successes - criticalFailures;
+
+    // Construct the result string
+    let resultString = '';
+    resultString += parseSuccessesString(successes);
+    resultString += parseCritSuccessString(criticalSuccesses);
+    resultString += parseCritFailureString(criticalFailures);
+
+    // Compile the string of rolled number array `[50, 50, 50]`
+    let rolledNumberString = `\`[${String(returnedNumbers).replace(/,/g, ', ')}]\``;
+
+    // Replace any dice that shouldn't have been rolled with the letter S
+    if (skip150) {
+      returnedNumbers.forEach((n, i) => {
+        if ((i == 0 && criteria[i] + 50 >= 150) || criteria[i] >= 150) {
+          rolledNumberString = rolledNumberString.replace(String(n), 'S');
+        }
+      });
+      resultString += "\n\t*Any thresholds above 150 have been automatically added to successes, marked by an `S`.*"
+    }
+
+    if (criticalSuccesses > 0) {
+      resultString += `\n\t*Gain ${criticalSuccesses} XP.* `
+    }
+    if (criticalFailures > 0) {
+      resultString += `\n\t*Note: Critical failures have been subtracted from the total number of successes.*`
+    }
+    if (cancelledFailures > 0) {
+      resultString += `\n\t*Note: Due to high threshold (100-150), ${cancelledFailures} critical failure${cancelledFailures == 1 ? '' : 's'} ${cancelledFailures == 1 ? 'has' : 'have'} been negated.*`
+    }
+
+    // Send final message to channel
+    let finalMessage = `${userAlias} rolled... ${rolledNumberString} Result: ${resultString}`
+    let finalReply = await interaction.reply({content: finalMessage, fetchReply: true});
+    if ((successes > 0 || criticalSuccesses > 0) && criticalFailures == 0) {
+      finalReply.react('🎉');
+    }
+    if (criticalFailures > 0) {
+      finalReply.react('752693741440991323')
+    }
+    if (successes == 0 && criticalSuccesses == 0) {
+      finalReply.react('😢')
+    }
+
+  });
+
+}
+
+module.exports = {
+  executeNormalDiceRoll,
+  executeRankedSkillCheck
+};

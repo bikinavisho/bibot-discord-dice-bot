@@ -1,4 +1,4 @@
-const {log} = require('./logging-util.js');
+const {log} = require('../logging-util.js');
 
 function getCriteria(argument, rank) {
   // This represents the modifiers that are being used
@@ -29,6 +29,13 @@ function getCriteria(argument, rank) {
     let i;
     for (i = 1; i < rank; i++) {
       criteria.push(criteria[0]);
+    }
+  } else if (criteria.length != rank) {
+    let lastCriteria = criteria[criteria.length - 1];
+    let diff = rank - criteria.length;
+    let i;
+    for (i = 0; i < diff; i++) {
+      criteria.push(lastCriteria);
     }
   }
 

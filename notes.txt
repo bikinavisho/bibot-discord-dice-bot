@@ -15,5 +15,15 @@ print the logs
 `heroku logs -a bibot-discord-bot`
 
 -----------------------------------------------------
+[[OLD]]
 `message.channel.send()` sends message in channel it was toggled in
 `message.reply()` replies to the user's message who toggled it, with @
+--------------------------
+[[NEW! SLASH COMMANDS]]
+`interaction.reply()` can only be used once per interaction
+  you can check if it's been used via bool `interaction.replied` <-- this doesn't work
+`interaction.followUp()` for use after reply has been used, can be used many times
+`interaction.channel.send()` will send to channel without replying to the user
+
+`{ephemeral: true}` means it's only shown to the user who triggered the command
+  usually used for error scenarios

@@ -62,7 +62,7 @@ client.on(Discord.Events.InteractionCreate, async interaction => {
   log('Time of Request: ', new Date(Date.now()).toLocaleString())
   const userAlias = interaction.member && interaction.member.nickname ? interaction.member.nickname : interaction.user.username;
   log(`Request initiated by: ${userAlias}`)
-  log(`Request initiated in server: ${interaction.guild.name}`)
+  log(`Request initiated in server: ${interaction.guild && interaction.guild.name ? interaction.guild.name : 'N/A'}`)
   log(`Command received: ${interaction.commandName}`);
   log('\n')
 

@@ -153,14 +153,27 @@ async function executeRankedSkillCheck(interaction) {
     // Compile the string of rolled number array `[50, 50, 50]`
     let rolledNumberString = `\`[${String(returnedNumbers).replace(/,/g, ', ')}]\``;
 
-    // Replace any dice that shouldn't have been rolled with the letter S
-    if (skip150) {
-      returnedNumbers.forEach((n, i) => {
+    // Replace any dice that triggered an auto success with the letter S
+    returnedNumbers.forEach((n, i) => {
+      if (skip150) {
+        // if it hits 150, it's an auto success, crit fails are not counted if skip150 is marked 
         if ((i == 0 && criteria[i] + 50 >= 150) || criteria[i] >= 150) {
           rolledNumberString = rolledNumberString.replace(String(n), 'S');
         }
-      });
-      resultString += "\n\t*Any thresholds above 150 have been automatically added to successes, marked by an `S`.*"
+      } else {
+        // if it's a crit fail AND above 150 mag, then the success and crit fail cancel out, marked by an X
+        // else if it's above 150 mag and not a crit fail, it's an auto success, marked by an S
+        if (n >= 90 && ((i == 0 && criteria[i] + 50 >= 150) || criteria[i] >= 150)) {
+          rolledNumberString = rolledNumberString.replace(String(n), 'X');
+        } else if (((i == 0 && criteria[i] + 50 >= 150) || criteria[i] >= 150) && n < 90) {
+          rolledNumberString = rolledNumberString.replace(String(n), 'S');
+        }
+      }
+      
+    });
+    resultString += "\n\t*Any magnitude above 150 has been automatically added to successes, marked by an `S`.*";
+    if (!skip150) {
+      resultString += "\n\t*Any magnitude above 150 which also rolled a crit fail has been cancelled out, marked by an `X`.*";
     }
 
     if (criticalSuccesses > 0) {

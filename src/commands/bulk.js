@@ -103,7 +103,11 @@ module.exports = {
             case SKILL_CHECK_RESULTS.NO_SUCCESS:
               log('\tno success');
               cancelledFailures++;
-              resultArrayWithSkips.push(rolledNumber);
+              if (accurateCriteria >= 150 && !skip150) {
+                resultArrayWithSkips.push('X');
+              } else {
+                resultArrayWithSkips.push(rolledNumber);
+              }
               break;
             case SKILL_CHECK_RESULTS.CRITICAL_FAILURE:
               log('\tcrit failure')
@@ -117,7 +121,7 @@ module.exports = {
             case SKILL_CHECK_RESULTS.SUCCESS:
               log('\tsuccess')
               successes++;
-              if (accurateCriteria >= 150 && skip150) {
+              if (accurateCriteria >= 150) {
                 resultArrayWithSkips.push('S');
               } else {
                 resultArrayWithSkips.push(rolledNumber);
@@ -146,9 +150,11 @@ module.exports = {
         .setTitle(`${userAlias}'s Rolls`)
         .setDescription(outputString)
         .setColor('Green');
-      if (skip150) {
-        embeddedMessage.setFooter({text: 'Anything marked with an S was above 150 magnitude and automatically counted as a success.'});
+      let footerText = 'Anything marked with an S was above 150 magnitude and automatically counted as a success.';
+      if (!skip150) {
+        footerText += '\nAnything marked with an X was above 150 but rolled a critical failure and thus the success and failure cancelled each other out.';
       }
+      embeddedMessage.setFooter({text: footerText});
       await interaction.reply({embeds: [embeddedMessage]});
     });
 

@@ -79,9 +79,13 @@ function skillCheck(num, threshold, skip150 = false) {
   if (num <= 10) {
     return SKILL_CHECK_RESULTS.CRITICAL_SUCCESS;
   }
-  if (threshold >= 100 && threshold <= 150 && num >= 90 && num != 100) {
+  if (threshold >= 150 && num >= 90 && num != 100) {
     log('\tcrit fail cancelled by sufficiently high threshold');
     return SKILL_CHECK_RESULTS.NO_SUCCESS;
+  }
+  if (threshold >=150) {
+    log('\tsufficiently high threshold granted auto success');
+    return SKILL_CHECK_RESULTS.SUCCESS;
   }
   if (num >= 90) {
     return SKILL_CHECK_RESULTS.CRITICAL_FAILURE;

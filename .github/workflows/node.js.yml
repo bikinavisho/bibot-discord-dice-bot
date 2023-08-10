@@ -3,6 +3,11 @@
 
 name: Node.js CI
 
+env:
+  BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+  RANDOM_API_KEY: ${{ secrets.RANDOM_API_KEY }}
+  CLIENT_ID: ${{ secrets.CLIENT_ID }}
+
 on:
   push:
     branches: [ "master" ]

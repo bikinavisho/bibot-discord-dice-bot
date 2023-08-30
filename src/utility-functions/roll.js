@@ -72,6 +72,7 @@ async function executeRankedSkillCheck(interaction) {
     let criticalSuccesses = 0;  // less than 10 including 10
     let criticalFailures = 0;   // greater than 90, including 90
     let cancelledFailures = 0;
+    let hasOver150 = false;
 
     if (autoSuccesses > 0) {
       successes += autoSuccesses;
@@ -79,6 +80,11 @@ async function executeRankedSkillCheck(interaction) {
 
     returnedNumbers.forEach(async (num, i) => {
       log(`comparing ${num} with ${criteria[i]}`)
+
+      if (criteria[i] + (i === 0 ? 50 : 0) >= 150) {
+        hasOver150 = true;
+      }
+      
       // Add 50 to the first roll and evaluate result of comparison
       switch(skillCheck(num, criteria[i] + (i === 0 ? 50 : 0), skip150)) {
         case SKILL_CHECK_RESULTS.NO_SUCCESS:
@@ -171,9 +177,11 @@ async function executeRankedSkillCheck(interaction) {
       }
       
     });
-    resultString += "\n\t*Any magnitude above 150 has been automatically added to successes, marked by an `S`.*";
-    if (!skip150) {
-      resultString += "\n\t*Any magnitude above 150 which also rolled a crit fail has been cancelled out, marked by an `X`.*";
+    if (hasOver150) {
+      resultString += "\n\t*Any magnitude above 150 has been automatically added to successes, marked by an `S`.*";
+      if (!skip150) {
+        resultString += "\n\t*Any magnitude above 150 which also rolled a crit fail has been cancelled out, marked by an `X`.*";
+      }
     }
 
     if (criticalSuccesses > 0) {

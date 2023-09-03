@@ -55,9 +55,6 @@ async function executeRankedSkillCheck(interaction) {
   let skip150 = interaction.options.getBoolean('skip150') ?? false;
 
   log(`received parameters: {rank: ${rank}, magnitude: ${magnitude}, autoSuccesses: ${autoSuccesses}, skip150: ${skip150}}`)
-  if (isNaN(rank)) {
-    throw new Error("rank passed in was not a number");
-  }
   
   // remove spaces from magnitude
   magnitude = magnitude.replaceAll(' ', '');
@@ -65,9 +62,11 @@ async function executeRankedSkillCheck(interaction) {
   //parse out the numbers inside the string of #,#,#
   let criteria = getCriteria(magnitude, rank);
   log(`Criteria parsed as: ${criteria}`);
-  if (isNaN(criteria)) {
-    throw new Error("criteria passed in was not a number.");
-  }
+  criteria.forEach((c) => {
+    if (isNaN(Number(c))) {
+      throw new Error("criteria passed in was not a number.");
+    }
+  });
 
   let randomConfig = {
     min: 1, max: 100, n: rank

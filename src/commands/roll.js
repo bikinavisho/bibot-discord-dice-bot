@@ -59,6 +59,11 @@ module.exports = {
 						.setMaxValue(10)
 						.setRequired(false)
 				)
+			       .addStringOption(option =>
+					option.setName('comment')
+						.setDescription('Add a comment to your roll.')
+						.setRequired(false)
+				)
 		)
 		,
 	async execute(interaction) {

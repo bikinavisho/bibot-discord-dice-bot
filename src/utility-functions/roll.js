@@ -179,7 +179,7 @@ async function executeRankedSkillCheck(interaction) {
     });
     if (hasOver150) {
       resultString += "\n\t*Any magnitude above 150 has been automatically added to successes, marked by an `S`.*";
-      if (!skip150 && criticalFailures > 0) {
+      if (!skip150) {
         resultString += "\n\t*Any magnitude above 150 which also rolled a crit fail has been cancelled out, marked by an `X`.*";
       }
     }

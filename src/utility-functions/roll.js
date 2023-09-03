@@ -201,6 +201,9 @@ async function executeRankedSkillCheck(interaction) {
 
     // Send final message to channel
     let finalMessage = `${userAlias} rolled... ${rolledNumberString} Result: ${resultString}`
+    if (interaction.options.getString('comment')) {
+      finalMessage += `\n\nFor: \`${comment}\``;
+    }
     let finalReply = await interaction.reply({content: finalMessage, fetchReply: true});
     if ((successes > 0 || criticalSuccesses > 0) && criticalFailures == 0) {
       finalReply.react('🎉');

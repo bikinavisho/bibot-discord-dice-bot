@@ -164,22 +164,22 @@ async function executeRankedSkillCheck(interaction) {
       if (skip150) {
         // if it hits 150, it's an auto success, crit fails are not counted if skip150 is marked 
         if ((i == 0 && criteria[i] + 50 >= 150) || criteria[i] >= 150) {
-          rolledNumberString = rolledNumberString.replace(String(n), 'S');
+          rolledNumberString = rolledNumberString.replace(String(n), String(n) + ' (S)');
         }
       } else {
         // if it's a crit fail AND above 150 mag, then the success and crit fail cancel out, marked by an X
         // else if it's above 150 mag and not a crit fail, it's an auto success, marked by an S
         if (n >= 90 && ((i == 0 && criteria[i] + 50 >= 150) || criteria[i] >= 150)) {
-          rolledNumberString = rolledNumberString.replace(String(n), 'X');
+          rolledNumberString = rolledNumberString.replace(String(n), String(n) + ' (X)');
         } else if (((i == 0 && criteria[i] + 50 >= 150) || criteria[i] >= 150) && n < 90) {
-          rolledNumberString = rolledNumberString.replace(String(n), 'S');
+          rolledNumberString = rolledNumberString.replace(String(n), String(n) + ' (S)');
         }
       }
       
     });
     if (hasOver150) {
       resultString += "\n\t*Any magnitude above 150 has been automatically added to successes, marked by an `S`.*";
-      if (!skip150) {
+      if (!skip150 && criticalFailures > 0) {
         resultString += "\n\t*Any magnitude above 150 which also rolled a crit fail has been cancelled out, marked by an `X`.*";
       }
     }

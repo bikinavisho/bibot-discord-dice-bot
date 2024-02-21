@@ -80,7 +80,7 @@ function skillCheck(num, threshold, skip150 = false) {
     return SKILL_CHECK_RESULTS.CRITICAL_SUCCESS;
   }
   if (threshold >= 150 && num >= 90 && num != 100) {
-    log('\tcrit fail cancelled by sufficiently high threshold');
+    log('\tcrit fail cancelled by sufficiently high threshold (150)');
     return SKILL_CHECK_RESULTS.NO_SUCCESS;
   }
   if (threshold >=150) {
@@ -88,7 +88,12 @@ function skillCheck(num, threshold, skip150 = false) {
     return SKILL_CHECK_RESULTS.SUCCESS;
   }
   if (num >= 90) {
-    return SKILL_CHECK_RESULTS.CRITICAL_FAILURE;
+    if (num <= threshold) {
+      log('\tcrit fail cancelled since the roll+mod would have been a success');
+      return SKILL_CHECK_RESULTS.NO_SUCCESS;
+    } else {
+      return SKILL_CHECK_RESULTS.CRITICAL_FAILURE;
+    }
   }
   if (num <= threshold) {
     return SKILL_CHECK_RESULTS.SUCCESS;

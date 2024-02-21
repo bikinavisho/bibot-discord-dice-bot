@@ -196,7 +196,7 @@ async function executeRankedSkillCheck(interaction) {
       resultString += `\n\t*Note: Critical failures have been subtracted from the total number of successes.*`
     }
     if (cancelledFailures > 0) {
-      resultString += `\n\t*Note: Due to high threshold (100-150), ${cancelledFailures} critical failure${cancelledFailures == 1 ? '' : 's'} ${cancelledFailures == 1 ? 'has' : 'have'} been negated.*`
+      resultString += `\n\t*Note: Due to high threshold (100-150), or a sufficiently high threshold (it would have succeeded if not for the crit fail rolled), ${cancelledFailures} critical failure${cancelledFailures == 1 ? '' : 's'} ${cancelledFailures == 1 ? 'has' : 'have'} been negated.*`
     }
 
     // Send final message to channel

@@ -4,6 +4,8 @@ A Discord bot that can roll dice for:
 - Powered By The Apocalypse
 - FATE
 - GURPS
+- Mistborn Adventure Game
+- [3 Raccoons in a Trench Coat](https://penguinking.com/three-raccoons-in-a-trenchcoat/)
 - other
 
 ## Usage Instructions

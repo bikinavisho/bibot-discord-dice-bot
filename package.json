@@ -1,28 +1,35 @@
 {
-  "name": "discord-dice-bot",
-  "version": "2.0.0",
-  "description": "A discord dice rolling bot!",
-  "engines": {
-    "node": "^20.0.0",
-    "npm": "^10.0.0"
-  },
-  "main": "index.js",
-  "scripts": {
-    "start": "node ./src/index.js",
-    "deploy": "node ./src/deploy-commands.js",
-    "undeploy": "node ./src/undeploy-commands.js"
-  },
-  "author": "Bianca",
-  "license": "ISC",
-  "dependencies": {
-    "discord.js": "^14.0.0",
-    "dotenv": "^8.2.0",
-    "lodash": "^4.17.20",
-    "random-js": "^2.1.0",
-    "random-org": "^2.1.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/bikinavisho/bibot-discord-dice-bot.git"
-  }
+	"name": "discord-dice-bot",
+	"version": "2.0.1",
+	"description": "A discord dice rolling bot!",
+	"engines": {
+		"node": "^20.0.0",
+		"npm": "^10.0.0"
+	},
+	"main": "index.js",
+	"scripts": {
+		"start": "node ./src/index.js",
+		"deploy": "node ./src/deploy-commands.js",
+		"undeploy": "node ./src/undeploy-commands.js",
+		"lint": "eslint ./src/**/*.js",
+		"lint:roller": "eslint ./src/**/*.js --fix"
+	},
+	"author": "Bianca",
+	"license": "ISC",
+	"dependencies": {
+		"discord.js": "^14.0.0",
+		"dotenv": "^8.2.0",
+		"lodash": "^4.17.20",
+		"random-js": "^2.1.0",
+		"random-org": "^2.1.0"
+	},
+	"devDependencies": {
+		"eslint": "^8.57.0",
+		"prettier": "^3.2.5",
+		"prettier-eslint": "^16.3.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/bikinavisho/bibot-discord-dice-bot.git"
+	}
 }

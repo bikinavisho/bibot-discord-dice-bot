@@ -1,6 +1,14 @@
 const Discord = require('discord.js');
 
-const {executeNormalDiceRoll, executeRankedSkillCheck} = require('../utility-functions/roll.js');
+const {
+	executeNormalDiceRoll,
+	executeRankedSkillCheck,
+	executeNuevoHuevoJuegoDiceRoll
+} = require('../utility-functions/roll.js');
+
+const COMMAND_NAME_DICE = 'dice';
+const COMMAND_NAME_RANKED = 'ranked';
+const COMMAND_NAME_NUEVOHUEVOJUEGO = 'nuevohuevojuego';
 
 module.exports = {
 	data: new Discord.SlashCommandBuilder()
@@ -8,7 +16,7 @@ module.exports = {
 		.setDescription('Rolls dice.')
 		.addSubcommand((subcommand) =>
 			subcommand
-				.setName('dice')
+				.setName(COMMAND_NAME_DICE)
 				.setDescription('Roll one or more dice with a specified number of sides.')
 				.addIntegerOption((option) =>
 					option
@@ -35,7 +43,24 @@ module.exports = {
 		)
 		.addSubcommand((subcommand) =>
 			subcommand
-				.setName('ranked')
+				.setName(COMMAND_NAME_NUEVOHUEVOJUEGO)
+				.setDescription("Rolls 1d100 and determines success according to Hunter's 2024 campaign system rules.")
+				.addIntegerOption((option) =>
+					option
+						.setName('modifier')
+						.setDescription('a modifier to the overall roll, can be positive or negative')
+						.setRequired(false)
+				)
+				.addIntegerOption((option) =>
+					option
+						.setName('greater_successes')
+						.setDescription('the number of greater successes that your character can add to this roll')
+						.setRequired(false)
+				)
+		)
+		.addSubcommand((subcommand) =>
+			subcommand
+				.setName(COMMAND_NAME_RANKED)
 				.setDescription(
 					"A d100 skill check where the player uses a skill/attribute's rank to determine successes."
 				)
@@ -76,10 +101,13 @@ module.exports = {
 				)
 		),
 	async execute(interaction) {
-		if (interaction.options.getSubcommand() === 'ranked') {
+		if (interaction.options.getSubcommand() === COMMAND_NAME_RANKED) {
 			await executeRankedSkillCheck(interaction);
 		}
-		if (interaction.options.getSubcommand() === 'dice') {
+		if (interaction.options.getSubcommand() === COMMAND_NAME_NUEVOHUEVOJUEGO) {
+			await executeNuevoHuevoJuegoDiceRoll(interaction);
+		}
+		if (interaction.options.getSubcommand() === COMMAND_NAME_DICE) {
 			await executeNormalDiceRoll(interaction);
 		}
 	}

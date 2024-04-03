@@ -55,6 +55,95 @@ async function executeNormalDiceRoll(interaction) {
 	});
 }
 
+async function executeNuevoHuevoJuegoDiceRoll(interaction) {
+	const userAlias =
+		interaction.member && interaction.member.nickname ? interaction.member.nickname : interaction.user.username;
+	let modifier = interaction.options.getInteger('modifier') ?? 0;
+	let greaterSuccesses = interaction.options.getInteger('greater_successes') ?? 0;
+
+	log(`received parameters: {modifier: ${modifier}, greaterSuccesses: ${greaterSuccesses}}`);
+
+	let randomConfig = {
+		min: 1,
+		max: 100,
+		n: 1
+	};
+	await random.generateIntegers(randomConfig).then(async (result) => {
+		let returnedNumbers = result.random.data;
+		let diceResult = returnedNumbers.at(0);
+		let sum = diceResult + modifier;
+		let messageContent;
+
+		let resultRating;
+
+		messageContent += `${userAlias} rolled: \`1d100\` = \`(${diceResult}) + ${modifier} = ${sum}\`\n`;
+		messageContent += 'thus resulting in ';
+		if (sum < 0) {
+			messageContent += 'a Total Failure';
+			resultRating = -1;
+		} else if (sum < 10) {
+			messageContent += 'a Great Failure';
+			resultRating = -1;
+		} else if (sum < 30) {
+			messageContent += 'a Failure';
+			resultRating = -1;
+		} else if (sum < 50) {
+			messageContent += 'a Partial Failure';
+			resultRating = 0;
+		} else if (sum < 80) {
+			messageContent += 'a Partial Success';
+			resultRating = 0;
+		} else if (sum < 90) {
+			messageContent += 'a Success';
+			resultRating = 1;
+		} else if (sum < 100) {
+			messageContent += '2 Successes';
+			resultRating = 1;
+		} else if (sum < 150) {
+			messageContent += '3 Successes';
+			resultRating = 1;
+		} else if (sum < 200) {
+			messageContent += '4 Successes';
+			resultRating = 1;
+		} else if (sum >= 200) {
+			messageContent += 'a Greater Success';
+			resultRating = 2;
+		}
+		messageContent += '.';
+
+		if (greaterSuccesses > 0) {
+			messageContent += `\nAdd ${greaterSuccesses} Greater Successes to your result.`;
+		}
+
+		if (sum >= 90 && sum <= 99) {
+			messageContent += '\n\nThis was a critical success! Gain 1 step in either the rolled attribute or skill.';
+		}
+		if (sum === 100) {
+			messageContent +=
+				'\n\nThis was a super critical success. Gain a permanent 1xp discount per step, minimum 1xp per step, and non-retroactive.';
+		}
+
+		await interaction.reply(messageContent).then((msg) => {
+			let reaction;
+			switch (resultRating) {
+				case -1:
+					reaction = '😢';
+					break;
+				case 0:
+					reaction = '🫤';
+					break;
+				case 1:
+					reaction = '🎉';
+					break;
+				case 2:
+					reaction = '<a:praisethesun:681222773481537838>';
+					break;
+			}
+			msg.react(reaction);
+		});
+	});
+}
+
 async function executeRankedSkillCheck(interaction) {
 	const userAlias =
 		interaction.member && interaction.member.nickname ? interaction.member.nickname : interaction.user.username;
@@ -234,5 +323,6 @@ async function executeRankedSkillCheck(interaction) {
 
 module.exports = {
 	executeNormalDiceRoll,
-	executeRankedSkillCheck
+	executeRankedSkillCheck,
+	executeNuevoHuevoJuegoDiceRoll
 };

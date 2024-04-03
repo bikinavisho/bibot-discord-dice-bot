@@ -129,7 +129,7 @@ async function executeNuevoHuevoJuegoDiceRoll(interaction) {
 			messageContent += `\n\nFor: \`${comment}\``;
 		}
 
-		await interaction.channel.send(messageContent).then((msg) => {
+		await interaction.reply({content: messageContent, fetchReply: true}).then((msg) => {
 			let reaction;
 			switch (resultRating) {
 				case -1:

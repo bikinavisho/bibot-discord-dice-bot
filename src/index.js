@@ -59,6 +59,10 @@ client.on(Discord.Events.InteractionCreate, async (interaction) => {
 	log(`Request initiated by: ${userAlias}`);
 	log(`Request initiated in server: ${interaction.guild && interaction.guild.name ? interaction.guild.name : 'N/A'}`);
 	log(`Command received: ${interaction.commandName}`);
+	const SUBCOMMAND_NAME = interaction.options.getSubcommand();
+	if (SUBCOMMAND_NAME) {
+		log(`Subcommand received: ${SUBCOMMAND_NAME}`);
+	}
 	log('\n');
 
 	const command = interaction.client.commands.get(interaction.commandName);
@@ -70,8 +74,12 @@ client.on(Discord.Events.InteractionCreate, async (interaction) => {
 
 	try {
 		await command.execute(interaction).then(() => {
+			let commandName = interaction.commandName;
+			if (SUBCOMMAND_NAME) {
+				commandName += `.${SUBCOMMAND_NAME}`;
+			}
 			log();
-			log(`Command \`${interaction.commandName}\` was successfully executed!`);
+			log(`Command \`${commandName}\` was successfully executed!`);
 		});
 	} catch (error) {
 		log();

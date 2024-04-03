@@ -70,11 +70,12 @@ async function executeNuevoHuevoJuegoDiceRoll(interaction) {
 	};
 	await random.generateIntegers(randomConfig).then(async (result) => {
 		let returnedNumbers = result.random.data;
+
 		let diceResult = returnedNumbers.at(0);
 		let sum = diceResult + modifier;
-		let messageContent;
+		let messageContent = '';
 
-		let resultRating;
+		let resultRating; // used for reacting to the message at the end
 
 		messageContent += `${userAlias} rolled: \`1d100\` = \`(${diceResult}) + ${modifier} = ${sum}\`\n`;
 		messageContent += 'thus resulting in ';
@@ -121,6 +122,11 @@ async function executeNuevoHuevoJuegoDiceRoll(interaction) {
 		if (sum === 100) {
 			messageContent +=
 				'\n\nThis was a super critical success. Gain a permanent 1xp discount per step, minimum 1xp per step, and non-retroactive.';
+		}
+
+		let comment = interaction.options.getString('comment');
+		if (comment) {
+			messageContent += `\n\nFor: \`${comment}\``;
 		}
 
 		await interaction.channel.send(messageContent).then((msg) => {

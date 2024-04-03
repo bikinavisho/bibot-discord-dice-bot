@@ -64,8 +64,7 @@ client.on(Discord.Events.InteractionCreate, async (interaction) => {
 	try {
 		subcommandName = interaction.options.getSubcommand();
 	} catch (e) {
-		log('error happened while trying to fetch subcommand');
-		log(e);
+		log('No subcommand specified for interaction.');
 	}
 	if (subcommandName) {
 		log(`Subcommand received: ${subcommandName}`);

@@ -123,7 +123,7 @@ async function executeNuevoHuevoJuegoDiceRoll(interaction) {
 				'\n\nThis was a super critical success. Gain a permanent 1xp discount per step, minimum 1xp per step, and non-retroactive.';
 		}
 
-		await interaction.reply(messageContent).then((msg) => {
+		await interaction.channel.send(messageContent).then((msg) => {
 			let reaction;
 			switch (resultRating) {
 				case -1:

@@ -1,6 +1,6 @@
 {
 	"name": "discord-dice-bot",
-	"version": "2.0.5",
+	"version": "2.1.0",
 	"description": "A discord dice rolling bot!",
 	"engines": {
 		"node": "^20.0.0",

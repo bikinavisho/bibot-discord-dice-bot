@@ -16,6 +16,34 @@ require('dotenv').config();
 
 const random = new RandomOrg({apiKey: process.env.RANDOM_API_KEY});
 
+function generateSuperSuccessMessageArray(userAlias) {
+	return [
+		'The Divine Roll!',
+		'Deus Vult!',
+		'By The Glory Of Sollaris!',
+		'Miraculous!',
+		'The Gods Smile Down Upon Us This Day!',
+		'The Blind King cannot stand in the Light of the Sun!',
+		'The Flesh Burneth Away, Purifying The Soul!',
+		`${userAlias} cleaves the sky, upturning mountains and draining the sea!`,
+		'Flesh and Blood make way for the Divine Steel!',
+		'By The Power Of Grayskull!',
+		`${userAlias.toUpperCase()} HAS THE POWER!!`,
+		`${userAlias} somehow managed to succeed, despite their numerous inequities.`,
+		`By some stroke of Luck or Fate, ${userAlias} was successful!`,
+		`${userAlias}'s success was definitely intentional, and in no way an accident.`,
+		`Despite the quality of ${userAlias}'s character, and all efforts to the contrary, ${userAlias} managed to succeed.`,
+		'By The Divine Light!',
+		"A dragon's hoarde awaits!",
+		'Onwards to Victory!',
+		'Ohhhh yeaaaahhhh',
+		'Praise The Sun!',
+		'You *can* see Mount Tai, way to go!',
+		'Your bloodline stirs...',
+		"That's a Big Rig you got there."
+	];
+}
+
 async function executeNormalDiceRoll(interaction) {
 	const userAlias =
 		interaction.member && interaction.member.nickname ? interaction.member.nickname : interaction.user.username;
@@ -56,6 +84,8 @@ async function executeNormalDiceRoll(interaction) {
 }
 
 async function executeNuevoHuevoJuegoDiceRoll(interaction) {
+	log('nuevo huevo juego dice roll BEGIN!');
+
 	const userAlias =
 		interaction.member && interaction.member.nickname ? interaction.member.nickname : interaction.user.username;
 	let modifier = interaction.options.getInteger('modifier') ?? 0;
@@ -72,6 +102,7 @@ async function executeNuevoHuevoJuegoDiceRoll(interaction) {
 		let returnedNumbers = result.random.data;
 
 		let diceResult = returnedNumbers.at(0);
+		log(`rolled 1d100, resulting in: ${diceResult}`);
 		let sum = diceResult + modifier;
 		let messageContent = '';
 
@@ -81,57 +112,83 @@ async function executeNuevoHuevoJuegoDiceRoll(interaction) {
 		messageContent += '\tthus resulting in ';
 		if (sum < 0) {
 			messageContent += 'a Total Failure';
-			resultRating = -1;
+			resultRating = -2;
+			log(`${sum} was less than 0, resulting in a Total Failure`);
 		} else if (sum < 10) {
 			messageContent += 'a Great Failure';
 			resultRating = -1;
+			log(`${sum} was less than 10, resulting in a Great Failure`);
 		} else if (sum < 30) {
 			messageContent += 'a Failure';
 			resultRating = -1;
+			log(`${sum} was less than 30, resulting in a [normal] Failure`);
 		} else if (sum < 50) {
 			messageContent += 'a Partial Failure';
 			resultRating = 0;
+			log(`${sum} was less than 50, resulting in a Partial Failure`);
 		} else if (sum < 80) {
 			messageContent += 'a Partial Success';
 			resultRating = 0;
+			log(`${sum} was less than 80, resulting in a Partial Success`);
 		} else if (sum < 90) {
 			messageContent += 'a Success';
 			resultRating = 1;
+			log(`${sum} was less than 90, resulting in a [normal] Success`);
 		} else if (sum < 100) {
 			messageContent += '2 Successes';
 			resultRating = 1;
+			log(`${sum} was less than 100, resulting in 2 Successes`);
 		} else if (sum < 150) {
 			messageContent += '3 Successes';
 			resultRating = 1;
+			log(`${sum} was less than 150, resulting in 3 Successes`);
 		} else if (sum < 200) {
 			messageContent += '4 Successes';
 			resultRating = 1;
+			log(`${sum} was less than 200, resulting in 4 Successes`);
 		} else if (sum >= 200) {
 			messageContent += 'a Greater Success';
 			resultRating = 2;
+			log(`${sum} was greater than or equal to 200, resulting in a Greater Success!`);
 		}
 		messageContent += '.';
 
 		if (greaterSuccesses > 0) {
+			log(`${greaterSuccesses} added to the result (verbally, not mathematically)`);
 			messageContent += `\nAdd ${greaterSuccesses} Greater Successes to your result.`;
 		}
 
 		if (sum >= 90 && sum <= 99) {
-			messageContent += '\n\nThis was a critical success! Gain 1 step in either the rolled attribute or skill.';
+			log('crit success');
+			messageContent += '\n\t*Gain 1 step in the rolled attribute or skill.*';
 		}
 		if (sum === 100) {
-			messageContent +=
-				'\n\nThis was a super critical success. Gain a permanent non-retroactive 1xp discount per step, which can go no lower than 1xp per step.';
+			log('super crit success');
+			let successMessages = generateSuperSuccessMessageArray(userAlias);
+			// Randomly select one of the above success messages
+			let chosenIndex = _.random(0, successMessages.length - 1);
+			let successMessage = successMessages[chosenIndex];
+
+			// override previous messageContent with specialized phrasing for super critical success
+			messageContent = successMessage;
+			messageContent += `\n\t*${userAlias} rolled a \`100\`! Gain 1 talent.*`;
+
+			// messageContent += '\n\nThis was a Super Critical Success. Gain a permanent non-retroactive 1xp discount per step, which can go no lower than 1xp per step.';
 		}
 
 		let comment = interaction.options.getString('comment');
 		if (comment) {
+			log(`adding comment: "${comment}"`);
 			messageContent += `\n\nFor: \`${comment}\``;
 		}
 
 		await interaction.reply({content: messageContent, fetchReply: true}).then((msg) => {
+			log('reacting to reply...');
 			let reaction;
 			switch (resultRating) {
+				case -2:
+					reaction = '<:rip:752693741440991323>';
+					break;
 				case -1:
 					reaction = '😢';
 					break;
@@ -146,6 +203,7 @@ async function executeNuevoHuevoJuegoDiceRoll(interaction) {
 					break;
 			}
 			msg.react(reaction);
+			log('reaction sent.');
 		});
 	});
 }
@@ -223,27 +281,7 @@ async function executeRankedSkillCheck(interaction) {
 			// Handle super extraneous cases
 			if (num === 1) {
 				let successMessage = '';
-				let successMessages = [
-					'The Divine Roll!',
-					'Deus Vult!',
-					'By The Glory Of Sollaris!',
-					'Miraculous!',
-					'The Gods Smile Down Upon Us This Day!',
-					'The Blind King cannot stand in the Light of the Sun!',
-					'The Flesh Burneth Away, Purifying The Soul!',
-					`${userAlias} cleaves the sky, upturning mountains and draining the sea!`,
-					'Flesh and Blood make way for the Divine Steel!',
-					'By The Power Of Grayskull!',
-					`${userAlias.toUpperCase()} HAS THE POWER!!`,
-					`${userAlias} somehow managed to succeed, despite their numerous inequities.`,
-					`By some stroke of Luck or Fate, ${userAlias} was successful!`,
-					`${userAlias}'s success was definitely intentional, and in no way an accident.`,
-					`Despite the quality of ${userAlias}'s character, and all efforts to the contrary, ${userAlias} managed to succeed.`,
-					'By The Divine Light!',
-					"A dragon's hoarde awaits!",
-					'Onwards to Victory!',
-					'Ohhhh yeaaaahhhh'
-				];
+				let successMessages = generateSuperSuccessMessageArray(userAlias);
 				// Randomly select one of the above success messages
 				let chosenIndex = _.random(0, successMessages.length - 1);
 				// Add the success message to the final success message string

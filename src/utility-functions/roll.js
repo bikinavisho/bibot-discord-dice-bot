@@ -78,7 +78,7 @@ async function executeNuevoHuevoJuegoDiceRoll(interaction) {
 		let resultRating; // used for reacting to the message at the end
 
 		messageContent += `${userAlias} rolled: \`1d100\` = \`(${diceResult}) + ${modifier} = ${sum}\`\n`;
-		messageContent += 'thus resulting in ';
+		messageContent += '\tthus resulting in ';
 		if (sum < 0) {
 			messageContent += 'a Total Failure';
 			resultRating = -1;

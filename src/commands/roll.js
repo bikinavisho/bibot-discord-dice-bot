@@ -8,7 +8,7 @@ const {
 
 const COMMAND_NAME_DICE = 'dice';
 const COMMAND_NAME_RANKED = 'ranked';
-const COMMAND_NAME_NUEVOHUEVOJUEGO = 'nuevohuevojuego';
+const COMMAND_NAME_NUEVO_HUEVO_JUEGO = 'nhj';
 
 module.exports = {
 	data: new Discord.SlashCommandBuilder()
@@ -43,13 +43,13 @@ module.exports = {
 		)
 		.addSubcommand((subcommand) =>
 			subcommand
-				.setName(COMMAND_NAME_NUEVOHUEVOJUEGO)
+				.setName(COMMAND_NAME_NUEVO_HUEVO_JUEGO)
 				.setDescription("Rolls 1d100 and determines success according to Hunter's 2024 campaign system rules.")
 				.addIntegerOption((option) =>
 					option
 						.setName('modifier')
 						.setDescription('a modifier to the overall roll, can be positive or negative')
-						.setRequired(false)
+						.setRequired(true)
 				)
 				.addIntegerOption((option) =>
 					option
@@ -107,7 +107,7 @@ module.exports = {
 		if (interaction.options.getSubcommand() === COMMAND_NAME_RANKED) {
 			await executeRankedSkillCheck(interaction);
 		}
-		if (interaction.options.getSubcommand() === COMMAND_NAME_NUEVOHUEVOJUEGO) {
+		if (interaction.options.getSubcommand() === COMMAND_NAME_NUEVO_HUEVO_JUEGO) {
 			await executeNuevoHuevoJuegoDiceRoll(interaction);
 		}
 		if (interaction.options.getSubcommand() === COMMAND_NAME_DICE) {

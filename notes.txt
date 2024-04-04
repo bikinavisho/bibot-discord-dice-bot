@@ -25,5 +25,9 @@ print the logs
 `interaction.followUp()` for use after reply has been used, can be used many times
 `interaction.channel.send()` will send to channel without replying to the user
 
+NOTE: you *must* reply to an interaction, otherwise it sits as pending forever and gets confused
+
+react to reply via `interaction.reply({content: messageContent, fetchReply: true}).then((msg) => msg.react('❤️'))`
+
 `{ephemeral: true}` means it's only shown to the user who triggered the command
   usually used for error scenarios

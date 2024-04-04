@@ -121,7 +121,7 @@ async function executeNuevoHuevoJuegoDiceRoll(interaction) {
 		}
 		if (sum === 100) {
 			messageContent +=
-				'\n\nThis was a super critical success. Gain a permanent non-retroactive 1xp discount per step, with a minimum of 1xp per step.';
+				'\n\nThis was a super critical success. Gain a permanent non-retroactive 1xp discount per step, which can go no lower than 1xp per step.';
 		}
 
 		let comment = interaction.options.getString('comment');

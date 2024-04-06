@@ -100,6 +100,7 @@ module.exports = {
 
 			let numberOfBatchRolls = interaction.options.getInteger('repetitions');
 			let modifier = interaction.options.getInteger('modifier');
+			let comment = interaction.options.getString('comment');
 
 			log(`received parameters: {repetitions: ${numberOfBatchRolls}, modifier: ${modifier}}`);
 
@@ -156,7 +157,6 @@ module.exports = {
 					}
 				});
 
-				let outputString = `${userAlias} rolled ${numberOfBatchRolls}d100s with a modifier of ${modifier}. Here are the results.`;
 				log('statistics dump --------------------------------------');
 				log(`number of total failures: ${totalTotalFailures}`);
 				log(`number of great failures: ${totalGreatFailures}`);
@@ -167,8 +167,15 @@ module.exports = {
 				log(`number of greater successes: ${totalGreaterSuccesses}`);
 				log('------------------------------------------------------');
 
+				let titleString = `${userAlias}'s Rolls`;
+				if (comment) {
+					titleString += `for ${comment}`;
+				}
+				let outputString = `${userAlias} rolled ${numberOfBatchRolls}d100s with a modifier of ${modifier}. Here are the results.\n`;
+				outputString += `\t\`[${String(returnedNumbers).replace(/,/g, ', ')}]\`\n`;
+
 				const embeddedMessage = new Discord.EmbedBuilder()
-					.setTitle(`${userAlias}'s Rolls`)
+					.setTitle(titleString)
 					.setDescription(outputString)
 					.addFields(
 						{name: 'Number of Total Failures', value: String(totalTotalFailures)},
@@ -179,7 +186,7 @@ module.exports = {
 						{name: 'Number of Successes (cumulative)', value: String(totalSuccesses)},
 						{name: 'Number of Greater Successes', value: String(totalGreaterSuccesses)}
 					)
-					.setColor('Green');
+					.setColor('Gold');
 				await interaction.reply({embeds: [embeddedMessage]});
 			});
 		}

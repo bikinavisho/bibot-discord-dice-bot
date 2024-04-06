@@ -157,18 +157,27 @@ module.exports = {
 				});
 
 				let outputString = `${userAlias} rolled ${numberOfBatchRolls}d100s with a modifier of ${modifier}. Here are the results.`;
+				log('statistics dump --------------------------------------');
+				log(`number of total failures: ${totalTotalFailures}`);
+				log(`number of great failures: ${totalGreatFailures}`);
+				log(`number of [normal] failures: ${totalFailures}`);
+				log(`number of partial failures: ${totalPartialFailures}`);
+				log(`number of partial successes: ${totalPartialSuccesses}`);
+				log(`number of successes (cumulative): ${totalSuccesses}`);
+				log(`number of greater successes: ${totalGreaterSuccesses}`);
+				log('------------------------------------------------------');
 
 				const embeddedMessage = new Discord.EmbedBuilder()
 					.setTitle(`${userAlias}'s Rolls`)
 					.setDescription(outputString)
 					.addFields(
-						{name: 'Number of Total Failures', value: totalTotalFailures},
-						{name: 'Number of Great Failures', value: totalGreatFailures},
-						{name: 'Number of Failures', value: totalFailures},
-						{name: 'Number of Partial Failures', value: totalPartialFailures},
-						{name: 'Number of Partial Successes', value: totalPartialSuccesses},
-						{name: 'Number of Successes (cumulative)', value: totalSuccesses},
-						{name: 'Number of Greater Successes', value: totalGreaterSuccesses}
+						{name: 'Number of Total Failures', value: String(totalTotalFailures)},
+						{name: 'Number of Great Failures', value: String(totalGreatFailures)},
+						{name: 'Number of Failures', value: String(totalFailures)},
+						{name: 'Number of Partial Failures', value: String(totalPartialFailures)},
+						{name: 'Number of Partial Successes', value: String(totalPartialSuccesses)},
+						{name: 'Number of Successes (cumulative)', value: String(totalSuccesses)},
+						{name: 'Number of Greater Successes', value: String(totalGreaterSuccesses)}
 					)
 					.setColor('Green');
 				await interaction.reply({embeds: [embeddedMessage]});

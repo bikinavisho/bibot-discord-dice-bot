@@ -194,43 +194,45 @@ module.exports = {
 				if (numberOfSuperCriticalSuccesses > 0) {
 					footerText += `You rolled ${numberOfSuperCriticalSuccesses} super critical success${isPlural(numberOfSuperCriticalSuccesses) ? 'es' : ''} (100!). Add ${numberOfSuperCriticalSuccesses} talent to the rolled attribute or skill.\n`;
 				}
+				let randomCuteEmoticons = [
+					'(◠‿◠✿)',
+					'(◕‿◕✿)',
+					'●‿●',
+					'ヾ(＠⌒▽⌒＠)ﾉ',
+					'(◡‿◡✿)',
+					'✿◕ ‿ ◕✿',
+					'ヽ(‘ ∇‘ )ノ',
+					'(ﾟヮﾟ)',
+					'(∪ ◡ ∪)',
+					'≧◡≦',
+					'｡◕ ‿ ◕｡',
+					'╰(◡‿◡✿╰)',
+					'◕‿◕',
+					'◕ ◡ ◕',
+					'(¬‿¬)',
+					'(*˘︶˘*)',
+					'१✌˚◡˚✌५',
+					'＼(^-^)／',
+					'^‿^',
+					'₊·*◟(˶╹̆ꇴ╹̆˵)◜‧*･',
+					'ᵔᴥᵔ',
+					'(｡◕‿◕｡)',
+					'(◑‿◐)',
+					'ᵔᴥᵔ',
+					'₍•͈ᴗ•͈₎',
+					'ଘ(੭ˊ꒳ˋ)੭✧',
+					'(｡≍ฺ‿≍)⚟ʜᴇʜ♥',
+					'˙˚ଘo(∗ ❛ั ᵕ ❛ั )੭່˙',
+					'(•⚗৺⚗•)',
+					'(⚈᷀᷁ᴗ⚈᷀᷁⁎)',
+					'(✧≖‿ゝ≖)'
+				];
+				let chosenIndex = _.random(0, randomCuteEmoticons.length - 1);
+				let theChosenEmoticon = randomCuteEmoticons[chosenIndex];
 				if (_.isEmpty(footerText)) {
-					let randomCuteEmoticons = [
-						'(◠‿◠✿)',
-						'(◕‿◕✿)',
-						'●‿●',
-						'ヾ(＠⌒▽⌒＠)ﾉ',
-						'(◡‿◡✿)',
-						'✿◕ ‿ ◕✿',
-						'ヽ(‘ ∇‘ )ノ',
-						'(ﾟヮﾟ)',
-						'(∪ ◡ ∪)',
-						'≧◡≦',
-						'｡◕ ‿ ◕｡',
-						'╰(◡‿◡✿╰)',
-						'◕‿◕',
-						'◕ ◡ ◕',
-						'(¬‿¬)',
-						'(*˘︶˘*)',
-						'१✌˚◡˚✌५',
-						'＼(^-^)／',
-						'^‿^',
-						'₊·*◟(˶╹̆ꇴ╹̆˵)◜‧*･',
-						'ᵔᴥᵔ',
-						'(｡◕‿◕｡)',
-						'˚ᆺ˚',
-						'(◑‿◐)',
-						'ᵔᴥᵔ',
-						'₍•͈ᴗ•͈₎',
-						'ଘ(੭ˊ꒳ˋ)੭✧',
-						'(｡≍ฺ‿≍)⚟ʜᴇʜ♥',
-						'˙˚ଘo(∗ ❛ั ᵕ ❛ั )੭່˙',
-						'(•⚗৺⚗•)',
-						'(⚈᷀᷁ᴗ⚈᷀᷁⁎)',
-						'(✧≖‿ゝ≖)'
-					];
-					let chosenIndex = _.random(0, randomCuteEmoticons.length - 1);
-					footerText = randomCuteEmoticons[chosenIndex];
+					footerText = theChosenEmoticon;
+				} else {
+					footerText = theChosenEmoticon + '\n' + footerText;
 				}
 
 				const embeddedMessage = new Discord.EmbedBuilder()
@@ -247,7 +249,14 @@ module.exports = {
 					)
 					.setColor('Gold')
 					.setFooter({text: footerText});
-				await interaction.reply({embeds: [embeddedMessage]});
+				await interaction.reply({embeds: [embeddedMessage], fetchReply: true}).then((msg) => {
+					if (numberOfSuperCriticalSuccesses > 0) {
+						msg.react('<a:praisethesun:681222773481537838>');
+					}
+					if (numberOfCriticalSuccesses > 0) {
+						msg.react('🎉');
+					}
+				});
 			});
 		}
 

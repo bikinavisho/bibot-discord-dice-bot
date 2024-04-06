@@ -123,11 +123,11 @@ async function executeNuevoHuevoJuegoDiceRoll(interaction) {
 			messageContent += `\nAdd ${greaterSuccesses} Greater Successes to your result.`;
 		}
 
-		if (sum >= 90 && sum <= 99) {
+		if (diceResult >= 90 && diceResult <= 99) {
 			log('crit success');
 			messageContent += '\n\t*Gain 1 step in the rolled attribute or skill.*';
 		}
-		if (sum === 100) {
+		if (diceResult === 100) {
 			log('super crit success');
 			let successMessages = generateSuperSuccessMessageArray(userAlias);
 			// Randomly select one of the above success messages

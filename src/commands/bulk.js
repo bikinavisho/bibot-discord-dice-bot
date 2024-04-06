@@ -18,6 +18,10 @@ require('dotenv').config();
 
 const random = new RandomOrg({apiKey: process.env.RANDOM_API_KEY});
 
+function isPlural(num) {
+	return num !== 1;
+}
+
 module.exports = {
 	data: new Discord.SlashCommandBuilder()
 		.setName('bulk')
@@ -120,8 +124,18 @@ module.exports = {
 				let totalSuccesses = 0;
 				let totalGreaterSuccesses = 0;
 
-				returnedNumbers.forEach((result) => {
-					let sum = result + modifier;
+				let numberOfCriticalSuccesses = 0;
+				let numberOfSuperCriticalSuccesses = 0;
+
+				returnedNumbers.forEach((diceResult) => {
+					if (diceResult === 100) {
+						numberOfSuperCriticalSuccesses++;
+					}
+					if (diceResult >= 90 && diceResult <= 99) {
+						numberOfCriticalSuccesses++;
+					}
+
+					let sum = diceResult + modifier;
 
 					switch (evaluateSuccess(sum)) {
 						case EVALUATION_RESULT.TOTAL_FAILURE:
@@ -173,18 +187,63 @@ module.exports = {
 				}
 				let outputString = `${userAlias} rolled ${numberOfBatchRolls}d100s with a modifier of ${modifier}. Here are the results.\n`;
 				outputString += `\t\`[${String(returnedNumbers).replace(/,/g, ', ')}]\`\n`;
+				let footerText = '';
+				if (numberOfCriticalSuccesses > 0) {
+					footerText += `You rolled ${numberOfCriticalSuccesses} critical success${isPlural(numberOfCriticalSuccesses) ? 'es' : ''}. Add ${numberOfCriticalSuccesses} step${isPlural(numberOfCriticalSuccesses) ? 's' : ''} to the rolled attribute or skill.\n`;
+				}
+				if (numberOfSuperCriticalSuccesses > 0) {
+					footerText += `You rolled ${numberOfSuperCriticalSuccesses} super critical success${isPlural(numberOfSuperCriticalSuccesses) ? 'es' : ''} (100!). Add ${numberOfSuperCriticalSuccesses} talent to the rolled attribute or skill.\n`;
+				}
+				if (_.isEmpty(footerText)) {
+					let randomCuteEmoticons = [
+						'(◠‿◠✿)',
+						'(◕‿◕✿)',
+						'●‿●',
+						'ヾ(＠⌒▽⌒＠)ﾉ',
+						'(◡‿◡✿)',
+						'✿◕ ‿ ◕✿',
+						'ヽ(‘ ∇‘ )ノ',
+						'(ﾟヮﾟ)',
+						'(∪ ◡ ∪)',
+						'≧◡≦',
+						'｡◕ ‿ ◕｡',
+						'╰(◡‿◡✿╰)',
+						'◕‿◕',
+						'◕ ◡ ◕',
+						'(¬‿¬)',
+						'(*˘︶˘*)',
+						'१✌˚◡˚✌५',
+						'＼(^-^)／',
+						'^‿^',
+						'₊·*◟(˶╹̆ꇴ╹̆˵)◜‧*･',
+						'ᵔᴥᵔ',
+						'(｡◕‿◕｡)',
+						'˚ᆺ˚',
+						'(◑‿◐)',
+						'ᵔᴥᵔ',
+						'₍•͈ᴗ•͈₎',
+						'ଘ(੭ˊ꒳ˋ)੭✧',
+						'(｡≍ฺ‿≍)⚟ʜᴇʜ♥',
+						'˙˚ଘo(∗ ❛ั ᵕ ❛ั )੭່˙',
+						'(•⚗৺⚗•)',
+						'(⚈᷀᷁ᴗ⚈᷀᷁⁎)',
+						'(✧≖‿ゝ≖)'
+					];
+					let chosenIndex = _.random(0, randomCuteEmoticons.length - 1);
+					footerText = randomCuteEmoticons[chosenIndex];
+				}
 
 				const embeddedMessage = new Discord.EmbedBuilder()
 					.setTitle(titleString)
 					.setDescription(outputString)
 					.addFields(
-						{name: 'Number of Total Failures', value: String(totalTotalFailures), inline: true},
-						{name: 'Number of Great Failures', value: String(totalGreatFailures), inline: true},
-						{name: 'Number of Failures', value: String(totalFailures), inline: true},
-						{name: 'Number of Partial Failures', value: String(totalPartialFailures), inline: true},
-						{name: 'Number of Partial Successes', value: String(totalPartialSuccesses), inline: true},
-						{name: 'Number of Successes (cumulative)', value: String(totalSuccesses), inline: true},
-						{name: 'Number of Greater Successes', value: String(totalGreaterSuccesses), inline: true}
+						{name: 'Total Failures', value: String(totalTotalFailures), inline: true},
+						{name: 'Great Failures', value: String(totalGreatFailures), inline: true},
+						{name: 'Failures', value: String(totalFailures), inline: true},
+						{name: 'Partial Failures', value: String(totalPartialFailures), inline: true},
+						{name: 'Partial Successes', value: String(totalPartialSuccesses), inline: true},
+						{name: 'Successes (cumulative)', value: String(totalSuccesses), inline: true},
+						{name: 'Greater Successes', value: String(totalGreaterSuccesses), inline: true}
 					)
 					.setColor('Gold');
 				await interaction.reply({embeds: [embeddedMessage]});

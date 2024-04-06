@@ -10,6 +10,7 @@ const {
 	skillCheck,
 	SKILL_CHECK_RESULTS
 } = require('./trinity-functions.js');
+const {determineReaction, evaluateSuccess, printNuevoHuegoJuegoMessage} = require('./nuevo-huevo-juego.js');
 
 // enable the use of environemnt files (.env)
 require('dotenv').config();
@@ -106,51 +107,15 @@ async function executeNuevoHuevoJuegoDiceRoll(interaction) {
 		let sum = diceResult + modifier;
 		let messageContent = '';
 
-		let resultRating; // used for reacting to the message at the end
+		let botReaction; // used for reacting to the message at the end
 
 		messageContent += `${userAlias} rolled: \`1d100\` = \`(${diceResult}) + ${modifier} = ${sum}\`\n`;
 		messageContent += '\tthus resulting in ';
-		if (sum < 0) {
-			messageContent += 'a Total Failure';
-			resultRating = -2;
-			log(`${sum} was less than 0, resulting in a Total Failure`);
-		} else if (sum < 10) {
-			messageContent += 'a Great Failure';
-			resultRating = -1;
-			log(`${sum} was less than 10, resulting in a Great Failure`);
-		} else if (sum < 30) {
-			messageContent += 'a Failure';
-			resultRating = -1;
-			log(`${sum} was less than 30, resulting in a [normal] Failure`);
-		} else if (sum < 50) {
-			messageContent += 'a Partial Failure';
-			resultRating = 0;
-			log(`${sum} was less than 50, resulting in a Partial Failure`);
-		} else if (sum < 80) {
-			messageContent += 'a Partial Success';
-			resultRating = 0;
-			log(`${sum} was less than 80, resulting in a Partial Success`);
-		} else if (sum < 90) {
-			messageContent += 'a Success';
-			resultRating = 1;
-			log(`${sum} was less than 90, resulting in a [normal] Success`);
-		} else if (sum < 100) {
-			messageContent += '2 Successes';
-			resultRating = 1;
-			log(`${sum} was less than 100, resulting in 2 Successes`);
-		} else if (sum < 150) {
-			messageContent += '3 Successes';
-			resultRating = 1;
-			log(`${sum} was less than 150, resulting in 3 Successes`);
-		} else if (sum < 200) {
-			messageContent += '4 Successes';
-			resultRating = 1;
-			log(`${sum} was less than 200, resulting in 4 Successes`);
-		} else if (sum >= 200) {
-			messageContent += 'a Greater Success';
-			resultRating = 2;
-			log(`${sum} was greater than or equal to 200, resulting in a Greater Success!`);
-		}
+
+		let evaluationResult = evaluateSuccess(sum);
+		botReaction = determineReaction(evaluationResult);
+		// will add something that flows in the sentence, such as "a Total Failure" or "a Greater Success";
+		messageContent += printNuevoHuegoJuegoMessage(evaluationResult);
 		messageContent += '.';
 
 		if (greaterSuccesses > 0) {
@@ -184,25 +149,7 @@ async function executeNuevoHuevoJuegoDiceRoll(interaction) {
 
 		await interaction.reply({content: messageContent, fetchReply: true}).then((msg) => {
 			log('reacting to reply...');
-			let reaction;
-			switch (resultRating) {
-				case -2:
-					reaction = '<:rip:752693741440991323>';
-					break;
-				case -1:
-					reaction = '😢';
-					break;
-				case 0:
-					reaction = '🫤';
-					break;
-				case 1:
-					reaction = '🎉';
-					break;
-				case 2:
-					reaction = '<a:praisethesun:681222773481537838>';
-					break;
-			}
-			msg.react(reaction);
+			msg.react(botReaction);
 			log('reaction sent.');
 		});
 	});

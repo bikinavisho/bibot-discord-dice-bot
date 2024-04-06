@@ -35,34 +35,34 @@ function determineReaction(evaluation) {
 
 function evaluateSuccess(sumNum) {
 	if (sumNum < 0) {
-		log(`${sumNum} was less than 0, resulting in a Total Failure`);
+		log(`\t${sumNum} was less than 0, resulting in a Total Failure`);
 		return EVALUATION_RESULT.TOTAL_FAILURE;
 	} else if (sumNum < 10) {
-		log(`${sumNum} was less than 10, resulting in a Great Failure`);
+		log(`\t${sumNum} was less than 10, resulting in a Great Failure`);
 		return EVALUATION_RESULT.GREAT_FAILURE;
 	} else if (sumNum < 30) {
-		log(`${sumNum} was less than 30, resulting in a [normal] Failure`);
+		log(`\t${sumNum} was less than 30, resulting in a [normal] Failure`);
 		return EVALUATION_RESULT.FAILURE;
 	} else if (sumNum < 50) {
-		log(`${sumNum} was less than 50, resulting in a Partial Failure`);
+		log(`\t${sumNum} was less than 50, resulting in a Partial Failure`);
 		return EVALUATION_RESULT.PARTIAL_FAILURE;
 	} else if (sumNum < 80) {
-		log(`${sumNum} was less than 80, resulting in a Partial Success`);
+		log(`\t${sumNum} was less than 80, resulting in a Partial Success`);
 		return EVALUATION_RESULT.PARTIAL_SUCCESS;
 	} else if (sumNum < 90) {
-		log(`${sumNum} was less than 90, resulting in a [normal] Success`);
+		log(`\t${sumNum} was less than 90, resulting in a [normal] Success`);
 		return EVALUATION_RESULT.SUCCESS;
 	} else if (sumNum < 100) {
-		log(`${sumNum} was less than 100, resulting in 2 Successes`);
+		log(`\t${sumNum} was less than 100, resulting in 2 Successes`);
 		return EVALUATION_RESULT.DOUBLE_SUCCESS;
 	} else if (sumNum < 150) {
-		log(`${sumNum} was less than 150, resulting in 3 Successes`);
+		log(`\t${sumNum} was less than 150, resulting in 3 Successes`);
 		return EVALUATION_RESULT.TRIPLE_SUCCESS;
 	} else if (sumNum < 200) {
-		log(`${sumNum} was less than 200, resulting in 4 Successes`);
+		log(`\t${sumNum} was less than 200, resulting in 4 Successes`);
 		return EVALUATION_RESULT.QUADRUPLE_SUCCESS;
 	} else if (sumNum >= 200) {
-		log(`${sumNum} was greater than or equal to 200, resulting in a Greater Success!`);
+		log(`\t${sumNum} was greater than or equal to 200, resulting in a Greater Success!`);
 		return EVALUATION_RESULT.GREATER_SUCCESS;
 	}
 }

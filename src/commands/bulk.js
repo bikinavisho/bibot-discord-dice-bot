@@ -158,13 +158,13 @@ module.exports = {
 				});
 
 				log('statistics dump --------------------------------------');
-				log(`number of total failures: ${totalTotalFailures}`);
-				log(`number of great failures: ${totalGreatFailures}`);
-				log(`number of [normal] failures: ${totalFailures}`);
-				log(`number of partial failures: ${totalPartialFailures}`);
-				log(`number of partial successes: ${totalPartialSuccesses}`);
-				log(`number of successes (cumulative): ${totalSuccesses}`);
-				log(`number of greater successes: ${totalGreaterSuccesses}`);
+				log(`\tnumber of total failures: ${totalTotalFailures}`);
+				log(`\tnumber of great failures: ${totalGreatFailures}`);
+				log(`\tnumber of [normal] failures: ${totalFailures}`);
+				log(`\tnumber of partial failures: ${totalPartialFailures}`);
+				log(`\tnumber of partial successes: ${totalPartialSuccesses}`);
+				log(`\tnumber of successes (cumulative): ${totalSuccesses}`);
+				log(`\tnumber of greater successes: ${totalGreaterSuccesses}`);
 				log('------------------------------------------------------');
 
 				let titleString = `${userAlias}'s Rolls`;
@@ -178,13 +178,13 @@ module.exports = {
 					.setTitle(titleString)
 					.setDescription(outputString)
 					.addFields(
-						{name: 'Number of Total Failures', value: String(totalTotalFailures)},
-						{name: 'Number of Great Failures', value: String(totalGreatFailures)},
-						{name: 'Number of Failures', value: String(totalFailures)},
-						{name: 'Number of Partial Failures', value: String(totalPartialFailures)},
-						{name: 'Number of Partial Successes', value: String(totalPartialSuccesses)},
-						{name: 'Number of Successes (cumulative)', value: String(totalSuccesses)},
-						{name: 'Number of Greater Successes', value: String(totalGreaterSuccesses)}
+						{name: 'Number of Total Failures', value: String(totalTotalFailures), inline: true},
+						{name: 'Number of Great Failures', value: String(totalGreatFailures), inline: true},
+						{name: 'Number of Failures', value: String(totalFailures), inline: true},
+						{name: 'Number of Partial Failures', value: String(totalPartialFailures), inline: true},
+						{name: 'Number of Partial Successes', value: String(totalPartialSuccesses), inline: true},
+						{name: 'Number of Successes (cumulative)', value: String(totalSuccesses), inline: true},
+						{name: 'Number of Greater Successes', value: String(totalGreaterSuccesses), inline: true}
 					)
 					.setColor('Gold');
 				await interaction.reply({embeds: [embeddedMessage]});

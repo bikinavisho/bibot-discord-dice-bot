@@ -245,7 +245,8 @@ module.exports = {
 						{name: 'Successes (cumulative)', value: String(totalSuccesses), inline: true},
 						{name: 'Greater Successes', value: String(totalGreaterSuccesses), inline: true}
 					)
-					.setColor('Gold');
+					.setColor('Gold')
+					.setFooter({text: footerText});
 				await interaction.reply({embeds: [embeddedMessage]});
 			});
 		}

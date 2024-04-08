@@ -183,7 +183,7 @@ module.exports = {
 
 				let titleString = `${userAlias}'s Rolls`;
 				if (comment) {
-					titleString += `for ${comment}`;
+					titleString += ` for ${comment}`;
 				}
 				let outputString = `${userAlias} rolled ${numberOfBatchRolls}d100s with a modifier of ${modifier}. Here are the results.\n`;
 				outputString += `\t\`[${String(returnedNumbers).replace(/,/g, ', ')}]\`\n`;

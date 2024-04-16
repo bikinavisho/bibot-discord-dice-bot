@@ -10,7 +10,7 @@ const {
 	skillCheck,
 	SKILL_CHECK_RESULTS
 } = require('./trinity-functions.js');
-const {determineReaction, evaluateSuccess, printNuevoHuegoJuegoMessage} = require('./nuevo-huevo-juego.js');
+const {determineReaction, evaluateSuccess, printNuevoHuegoJuegoMessage, EVALUATION_RESULT} = require('./nuevo-huevo-juego.js');
 
 // enable the use of environemnt files (.env)
 require('dotenv').config();
@@ -123,6 +123,7 @@ async function executeNuevoHuevoJuegoDiceRoll(interaction) {
 			messageContent += `\nAdd ${greaterSuccesses} Greater Successes to your result.`;
 		}
 
+		// crit success logic 
 		if (diceResult >= 90 && diceResult <= 99) {
 			log('crit success');
 			messageContent += '\n\t*Gain 1 step in the rolled attribute or skill.*';
@@ -139,6 +140,24 @@ async function executeNuevoHuevoJuegoDiceRoll(interaction) {
 			messageContent += `\n\t*${userAlias} rolled a \`100\`! Gain 1 talent.*`;
 
 			// messageContent += '\n\nThis was a Super Critical Success. Gain a permanent non-retroactive 1xp discount per step, which can go no lower than 1xp per step.';
+		}
+		
+		// crit failure logic 
+		if (diceResult === 1 || (diceResult >= 2 && diceResult <=10) ) {
+			let negativeSuccesses;
+			if (diceResult === 1) {
+				log(`${userAlias} rolled a 1. Critical failure. -2 Successes.`);
+				negativeSuccesses = 2;
+			}
+			if (diceResult >= 2 && diceResult <=10) {
+				log(`${userAlias} rolled between 2 and 10. A slightly critical failure. -1 Success.`);
+				negativeSuccesses = 1;
+			}
+			log(`previous evaluation: ${evaluationResult}`);
+			let currentEvaluationIndex = Object.keys(EVALUATION_RESULT).indexOf(evaluationResult);
+			let newEvaluationIndex = currentEvaluationIndex - negativeSuccesses;
+			evaluationResult = EVALUATION_RESULT[Object.keys(EVALUATION_RESULT)[newEvaluationIndex]];
+			log(`new evaluation: ${evaluationResult}`);
 		}
 
 		let comment = interaction.options.getString('comment');

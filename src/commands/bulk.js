@@ -141,18 +141,18 @@ module.exports = {
 					if (diceResult === 1 || (diceResult >= 2 && diceResult <=10) ) {
 						let negativeSuccesses;
 						if (diceResult === 1) {
-							log(`${userAlias} rolled a 1. Critical failure. -2 Successes.`);
+							log(`\t\t${userAlias} rolled a 1. Critical failure. -2 Successes.`);
 							negativeSuccesses = 2;
 						}
 						if (diceResult >= 2 && diceResult <=10) {
-							log(`${userAlias} rolled between 2 and 10. A slightly critical failure. -1 Success.`);
+							log(`\t\t${userAlias} rolled between 2 and 10. A slightly critical failure. -1 Success.`);
 							negativeSuccesses = 1;
 						}
-						log(`previous evaluation: ${evaluationResult}`);
+						log(`\t\t\tprevious evaluation: ${evaluationResult}`);
 						let currentEvaluationIndex = Object.keys(EVALUATION_RESULT).indexOf(evaluationResult);
 						let newEvaluationIndex = Math.max(currentEvaluationIndex - negativeSuccesses, 0);
 						evaluationResult = EVALUATION_RESULT[Object.keys(EVALUATION_RESULT)[newEvaluationIndex]];
-						log(`new evaluation: ${evaluationResult}`);
+						log(`\t\t\tnew evaluation: ${evaluationResult}`);
 					}
 
 					switch (evaluationResult) {

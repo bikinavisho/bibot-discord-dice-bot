@@ -113,6 +113,23 @@ async function executeNuevoHuevoJuegoDiceRoll(interaction) {
 		messageContent += '\tthus resulting in ';
 
 		let evaluationResult = evaluateSuccess(sum);
+		// adjust for crit failures 
+		if (diceResult === 1 || (diceResult >= 2 && diceResult <=10) ) {
+			let negativeSuccesses;
+			if (diceResult === 1) {
+				log(`${userAlias} rolled a 1. Critical failure. -2 Successes.`);
+				negativeSuccesses = 2;
+			}
+			if (diceResult >= 2 && diceResult <=10) {
+				log(`${userAlias} rolled between 2 and 10. A slightly critical failure. -1 Success.`);
+				negativeSuccesses = 1;
+			}
+			log(`previous evaluation: ${evaluationResult}`);
+			let currentEvaluationIndex = Object.keys(EVALUATION_RESULT).indexOf(evaluationResult);
+			let newEvaluationIndex = Math.max(currentEvaluationIndex - negativeSuccesses, 0);
+			evaluationResult = EVALUATION_RESULT[Object.keys(EVALUATION_RESULT)[newEvaluationIndex]];
+			log(`new evaluation: ${evaluationResult}`);
+		}
 		botReaction = determineReaction(evaluationResult);
 		// will add something that flows in the sentence, such as "a Total Failure" or "a Greater Success";
 		messageContent += printNuevoHuegoJuegoMessage(evaluationResult);
@@ -140,24 +157,6 @@ async function executeNuevoHuevoJuegoDiceRoll(interaction) {
 			messageContent += `\n\t*${userAlias} rolled a \`100\`! Gain 1 talent.*`;
 
 			// messageContent += '\n\nThis was a Super Critical Success. Gain a permanent non-retroactive 1xp discount per step, which can go no lower than 1xp per step.';
-		}
-		
-		// crit failure logic 
-		if (diceResult === 1 || (diceResult >= 2 && diceResult <=10) ) {
-			let negativeSuccesses;
-			if (diceResult === 1) {
-				log(`${userAlias} rolled a 1. Critical failure. -2 Successes.`);
-				negativeSuccesses = 2;
-			}
-			if (diceResult >= 2 && diceResult <=10) {
-				log(`${userAlias} rolled between 2 and 10. A slightly critical failure. -1 Success.`);
-				negativeSuccesses = 1;
-			}
-			log(`previous evaluation: ${evaluationResult}`);
-			let currentEvaluationIndex = Object.keys(EVALUATION_RESULT).indexOf(evaluationResult);
-			let newEvaluationIndex = currentEvaluationIndex - negativeSuccesses;
-			evaluationResult = EVALUATION_RESULT[Object.keys(EVALUATION_RESULT)[newEvaluationIndex]];
-			log(`new evaluation: ${evaluationResult}`);
 		}
 
 		let comment = interaction.options.getString('comment');

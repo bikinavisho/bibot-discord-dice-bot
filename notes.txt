@@ -12,7 +12,7 @@ backup random package in case random.org API reaches quota/breaks
 
 -----------------------------------------------------
 print the logs
-`heroku logs -a bibot-discord-bot`
+`heroku logs -a bibot-discord-bot -t`
 
 -----------------------------------------------------
 [[OLD]]

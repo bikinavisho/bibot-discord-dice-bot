@@ -10,7 +10,12 @@ const {
 	skillCheck,
 	SKILL_CHECK_RESULTS
 } = require('./trinity-functions.js');
-const {determineReaction, evaluateSuccess, printNuevoHuegoJuegoMessage, EVALUATION_RESULT} = require('./nuevo-huevo-juego.js');
+const {
+	determineReaction,
+	evaluateSuccess,
+	printNuevoHuegoJuegoMessage,
+	EVALUATION_RESULT
+} = require('./nuevo-huevo-juego.js');
 
 // enable the use of environemnt files (.env)
 require('dotenv').config();
@@ -44,6 +49,8 @@ function generateSuperSuccessMessageArray(userAlias) {
 		"That's a Big Rig you got there."
 	];
 }
+
+const PRAISE_THE_SUN_EMOJI = '<a:praisethesun:681222773481537838>';
 
 async function executeNormalDiceRoll(interaction) {
 	const userAlias =
@@ -113,14 +120,14 @@ async function executeNuevoHuevoJuegoDiceRoll(interaction) {
 		messageContent += '\tthus resulting in ';
 
 		let evaluationResult = evaluateSuccess(sum);
-		// adjust for crit failures 
-		if (diceResult === 1 || (diceResult >= 2 && diceResult <=10) ) {
+		// adjust for crit failures
+		if (diceResult === 1 || (diceResult >= 2 && diceResult <= 10)) {
 			let negativeSuccesses;
 			if (diceResult === 1) {
 				log(`${userAlias} rolled a 1. Critical failure. -2 Successes.`);
 				negativeSuccesses = 2;
 			}
-			if (diceResult >= 2 && diceResult <=10) {
+			if (diceResult >= 2 && diceResult <= 10) {
 				log(`${userAlias} rolled between 2 and 10. A slightly critical failure. -1 Success.`);
 				negativeSuccesses = 1;
 			}
@@ -140,7 +147,7 @@ async function executeNuevoHuevoJuegoDiceRoll(interaction) {
 			messageContent += `\nAdd ${greaterSuccesses} Greater Successes to your result.`;
 		}
 
-		// crit success logic 
+		// crit success logic
 		if (diceResult >= 90 && diceResult <= 99) {
 			log('crit success');
 			messageContent += '\n\t*Gain 1 step in the rolled attribute or skill.*';
@@ -152,11 +159,12 @@ async function executeNuevoHuevoJuegoDiceRoll(interaction) {
 			let chosenIndex = _.random(0, successMessages.length - 1);
 			let successMessage = successMessages[chosenIndex];
 
-			// override previous messageContent with specialized phrasing for super critical success
-			messageContent = successMessage;
-			messageContent += `\n\t*${userAlias} rolled a \`100\`! Gain 1 talent.*`;
-
-			// messageContent += '\n\nThis was a Super Critical Success. Gain a permanent non-retroactive 1xp discount per step, which can go no lower than 1xp per step.';
+			// send a message with specialized phrasing for super critical success
+			successMessage += `\n\t*${userAlias} rolled a \`100\`! Gain 1 talent.*`;
+			await interaction.channel.send(successMessage).then((msg) => {
+				msg.react(PRAISE_THE_SUN_EMOJI);
+			});
+			// successMessage += '\n\nThis was a Super Critical Success. Gain a permanent non-retroactive 1xp discount per step, which can go no lower than 1xp per step.';
 		}
 
 		let comment = interaction.options.getString('comment');

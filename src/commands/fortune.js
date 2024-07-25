@@ -30,8 +30,7 @@ module.exports = {
 			let chosenFortuneIndex = _.first(returnedNumbers);
 			let chosenFortune = ARRAY_OF_FORTUNE[chosenFortuneIndex];
 
-			let reply = await interaction.reply({content: chosenFortune, fetchReply: true});
-			reply.react('🥠');
+			await interaction.reply({content: `🥠 ${chosenFortune}`});
 		});
 	}
 };

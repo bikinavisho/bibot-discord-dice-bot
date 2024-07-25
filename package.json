@@ -12,7 +12,8 @@
 		"deploy": "node ./src/deploy-commands.js",
 		"undeploy": "node ./src/undeploy-commands.js",
 		"lint": "eslint ./src/**/*.js",
-		"lint:roller": "eslint ./src/**/*.js --fix"
+		"lint:roller": "eslint ./src/**/*.js --fix",
+		"test": "jest"
 	},
 	"author": "Bianca",
 	"license": "ISC",
@@ -25,6 +26,7 @@
 	},
 	"devDependencies": {
 		"eslint": "^8.57.0",
+		"jest": "^29.7.0",
 		"prettier": "^3.2.5",
 		"prettier-eslint": "^16.3.0"
 	},

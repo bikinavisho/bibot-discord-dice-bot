@@ -6,7 +6,8 @@
 		"es2024": true
 	},
 	"globals": {
-		"client": "readonly"
+		"client": "readonly",
+		"jest": "readonly"
 	},
 	"rules": {
 		"no-fallthrough": "off"

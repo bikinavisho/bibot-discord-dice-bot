@@ -15,10 +15,10 @@ module.exports = {
 		.setName('fortune')
 		.setDescription('Randomly selects a virtual fortune cookie for you crack open.'),
 	async execute(interaction) {
-		// const userAlias =
-		// 	interaction.member && interaction.member.nickname ? interaction.member.nickname : interaction.user.username;
+		const userAlias =
+			interaction.member && interaction.member.nickname ? interaction.member.nickname : interaction.user.username;
 
-		log('it is time to gaze upon thine fortune');
+		log('\tit is time to gaze upon thine fortune');
 
 		let randomConfig = {
 			min: 1,
@@ -28,7 +28,9 @@ module.exports = {
 		await random.generateIntegers(randomConfig).then(async (result) => {
 			let returnedNumbers = result.random.data;
 			let chosenFortuneIndex = _.first(returnedNumbers);
-			let chosenFortune = ARRAY_OF_FORTUNE[chosenFortuneIndex];
+			let chosenFortune = ARRAY_OF_FORTUNE[chosenFortuneIndex - 1];
+
+			log(`\t${userAlias} has received the fortune: [[${chosenFortune}]]`);
 
 			await interaction.reply({content: `🥠 ${chosenFortune}`});
 		});

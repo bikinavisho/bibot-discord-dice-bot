@@ -11,6 +11,9 @@ module.exports = {
 				.setName('modifier')
 				.setDescription('a modifier to the overall roll, can be positive or negative')
 				.setRequired(false)
+		)
+		.addStringOption((option) =>
+			option.setName('comment').setDescription('Add a comment to your roll.').setRequired(false)
 		),
 	async execute(interaction) {
 		await executePoweredByTheApocalypseSkillCheck(interaction);

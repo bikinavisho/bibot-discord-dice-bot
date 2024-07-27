@@ -9,7 +9,8 @@ require('dotenv').config();
 const random = new RandomOrg({apiKey: process.env.RANDOM_API_KEY});
 
 async function executePoweredByTheApocalypseSkillCheck(interaction) {
-	const userAlias = interaction.member?.nickname ? interaction.member?.nickname : interaction.user?.username;
+	const userAlias =
+		interaction.member && interaction.member.nickname ? interaction.member.nickname : interaction.user.username;
 
 	let modifier = interaction.options.getInteger('modifier') ?? 0;
 	let comment = interaction.options.getString('comment');

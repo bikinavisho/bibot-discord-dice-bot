@@ -15,8 +15,7 @@ module.exports = {
 		.setName('fortune')
 		.setDescription('Randomly selects a virtual fortune cookie for you crack open.'),
 	async execute(interaction) {
-		const userAlias =
-			interaction.member && interaction.member.nickname ? interaction.member.nickname : interaction.user.username;
+		const userAlias = interaction.member?.nickname ? interaction.member?.nickname : interaction.user?.username;
 
 		log('\tit is time to gaze upon thine fortune');
 

@@ -1,10 +1,10 @@
-const fortuneCommand = require('../../src/commands/fortune');
+const pbtaCommand = require('../../src/commands/pbta');
 
 const {SlashCommandBuilder} = require('discord.js');
 
-describe('fortune', () => {
+describe('pbta', () => {
 	test('data is an instance of SlackCommandBuilder class', () => {
-		expect(fortuneCommand.data).toBeInstanceOf(SlashCommandBuilder);
+		expect(pbtaCommand.data).toBeInstanceOf(SlashCommandBuilder);
 	});
 	test('execute can be called without exceptions', async () => {
 		const mockInteraction = {
@@ -16,10 +16,14 @@ describe('fortune', () => {
 			},
 			reply: jest.fn().mockResolvedValue({
 				react: jest.fn()
-			})
+			}),
+			options: {
+				getInteger: jest.fn(),
+				getString: jest.fn()
+			}
 		};
 		await expect(() => {
-			fortuneCommand.execute(mockInteraction);
+			pbtaCommand.execute(mockInteraction);
 		}).not.toThrow();
 	});
 });

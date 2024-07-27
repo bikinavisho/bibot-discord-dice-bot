@@ -9,10 +9,10 @@ require('dotenv').config();
 const random = new RandomOrg({apiKey: process.env.RANDOM_API_KEY});
 
 async function executePoweredByTheApocalypseSkillCheck(interaction) {
-	const userAlias =
-		interaction.member && interaction.member.nickname ? interaction.member.nickname : interaction.user.username;
+	const userAlias = interaction.member?.nickname ? interaction.member?.nickname : interaction.user?.username;
 
 	let modifier = interaction.options.getInteger('modifier') ?? 0;
+	let comment = interaction.options.getString('comment');
 
 	log(`rolling 2d6 with a modifier of ${modifier}`);
 
@@ -33,6 +33,10 @@ async function executePoweredByTheApocalypseSkillCheck(interaction) {
 			messageString = `${userAlias} rolled: \`2d6\` = (\`${String(returnedNumbers).replace(/,/g, ' + ')}\`)\` + ${modifier}\` = \`${total}\`\n`;
 		} else {
 			messageString = `${userAlias} rolled: \`2d6\` = (\`${String(returnedNumbers).replace(/,/g, ' + ')}\`) = \`${total}\`\n`;
+		}
+
+		if (comment) {
+			messageString += `\t${userAlias} rolled for \`${comment}\`.`;
 		}
 
 		let success = false;

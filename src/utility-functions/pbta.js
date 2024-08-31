@@ -37,7 +37,7 @@ async function executePoweredByTheApocalypseSkillCheck(interaction) {
 		}
 
 		if (comment) {
-			messageString += `\t${userAlias} rolled for \`${comment}\`.`;
+			messageString += `\t${userAlias} rolled for \`${comment}\`. `;
 		}
 
 		let success = false;

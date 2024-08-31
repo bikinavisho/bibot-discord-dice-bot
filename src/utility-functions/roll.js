@@ -166,6 +166,11 @@ async function executeNuevoHuevoJuegoDiceRoll(interaction) {
 			});
 			// successMessage += '\n\nThis was a Super Critical Success. Gain a permanent non-retroactive 1xp discount per step, which can go no lower than 1xp per step.';
 		}
+		// crit fail logic
+		if (diceResult <= 10) {
+			log('crit failure');
+			messageContent += '\n\nYou got a Critical Failure :(';
+		}
 
 		let comment = interaction.options.getString('comment');
 		if (comment) {

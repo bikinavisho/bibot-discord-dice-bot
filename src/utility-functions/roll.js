@@ -170,6 +170,8 @@ async function executeNuevoHuevoJuegoDiceRoll(interaction) {
 		if (diceResult <= 10) {
 			log('crit failure');
 			messageContent += '\n\n⚠️You got a Critical Failure.';
+			// override bot reaction
+			botReaction = '😨';
 		}
 
 		let comment = interaction.options.getString('comment');
@@ -181,9 +183,6 @@ async function executeNuevoHuevoJuegoDiceRoll(interaction) {
 		await interaction.reply({content: messageContent, fetchReply: true}).then((msg) => {
 			log('reacting to reply...');
 			msg.react(botReaction);
-			if (diceResult <= 10) {
-				msg.react('😨');
-			}
 			log('reaction sent.');
 		});
 	});

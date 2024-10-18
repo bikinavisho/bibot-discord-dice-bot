@@ -428,7 +428,12 @@ module.exports = [
 	'Love is like wildflowers…it is often found in the most unlikely places.',
 	'In dreams and in love there are no impossibilities.',
 	"Love isn't something you find. Love is something that finds you.",
-	'True love is not something that comes everyday, follow your heart, it knows the right answer.'
+	'True love is not something that comes everyday, follow your heart, it knows the right answer.',
+
+	// ==================================================================================================
+	// real life fortune cookies
+	// ==================================================================================================
+	'Your smile is a curve that can get a lot of things straight.'
 
 	// ==================================================================================================
 	// suggestions from friends

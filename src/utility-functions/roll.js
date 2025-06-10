@@ -175,9 +175,10 @@ async function executeNuevoHuevoJuegoDiceRoll(interaction) {
 		}
 
 		let comment = interaction.options.getString('comment');
+		let emoji = interaction.options.getString('emoji') ?? '';
 		if (comment) {
-			log(`adding comment: "${comment}"`);
-			messageContent += `\n\nFor: \`${comment}\``;
+			log(`adding comment: "${comment + emoji}"`);
+			messageContent += `\n\nFor: \`${comment}\` ${emoji}`;
 		}
 
 		await interaction.reply({content: messageContent, fetchReply: true}).then((msg) => {

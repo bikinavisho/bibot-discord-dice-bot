@@ -13,6 +13,12 @@ const EVALUATION_RESULT = {
 	GREATER_SUCCESS: 'GREATER_SUCCESS'
 };
 
+/**
+ * Returns a reaction emoji or custom Discord emoji string based on the evaluation result.
+ *
+ * @param {EVALUATION_RESULT} evaluation - The evaluation result to determine the reaction for.
+ * @returns {string} The corresponding emoji or Discord emoji string.
+ */
 function determineReaction(evaluation) {
 	switch (evaluation) {
 		case EVALUATION_RESULT.TOTAL_FAILURE:
@@ -33,6 +39,12 @@ function determineReaction(evaluation) {
 	}
 }
 
+/**
+ * Evaluates the success level based on the provided sum number.
+ *
+ * @param {number} sumNum - The sum to evaluate for success or failure.
+ * @returns {string} One of the EVALUATION_RESULT values representing the evaluation outcome.
+ */
 function evaluateSuccess(sumNum) {
 	if (sumNum < 0) {
 		log(`\t${sumNum} was less than 0, resulting in a Total Failure`);
@@ -67,6 +79,37 @@ function evaluateSuccess(sumNum) {
 	}
 }
 
+/**
+ * Increments the evaluation result by a specified number of autosuccesses.
+ * If the increment exceeds the available evaluation result keys, returns the highest success value.
+ *
+ * @param {string} evaluationResult - The current evaluation result key.
+ * @param {number} incrementBy - The number of autosuccesses to apply.
+ * @returns {string} The new evaluation result key after incrementing.
+ */
+function incrementSuccess(evaluationResult, incrementBy) {
+	// if there are no autosuccesses to apply, then return the original evaluation result
+	if (!incrementBy || incrementBy === 0) {
+		return evaluationResult;
+	}
+	log(`\tapplying ${incrementBy} autosuccesses to ${evaluationResult}`);
+	const EVALUATION_RESULT_KEYS = Object.keys(EVALUATION_RESULT);
+	let currentIndex = EVALUATION_RESULT_KEYS.indexOf(evaluationResult);
+	let newIndex = currentIndex + incrementBy;
+	// if it exceeds the length of the array, then default to the top of the evaluation result
+	if (newIndex > EVALUATION_RESULT_KEYS.length - 1) {
+		return EVALUATION_RESULT.GREATER_SUCCESS;
+	} else {
+		return EVALUATION_RESULT[EVALUATION_RESULT_KEYS[newIndex]];
+	}
+}
+
+/**
+ * Returns a descriptive message based on the evaluation result.
+ *
+ * @param {EVALUATION_RESULT} evaluation - The evaluation result enum value.
+ * @returns {string|undefined} A string describing the evaluation outcome, or undefined if the evaluation is not recognized.
+ */
 function printNuevoHuegoJuegoMessage(evaluation) {
 	switch (evaluation) {
 		case EVALUATION_RESULT.TOTAL_FAILURE:
@@ -96,5 +139,6 @@ module.exports = {
 	determineReaction,
 	EVALUATION_RESULT,
 	evaluateSuccess,
+	incrementSuccess,
 	printNuevoHuegoJuegoMessage
 };

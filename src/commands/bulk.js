@@ -11,7 +11,7 @@ const {
 	skillCheck,
 	SKILL_CHECK_RESULTS
 } = require('../utility-functions/trinity-functions.js');
-const {evaluateSuccess, EVALUATION_RESULT} = require('../utility-functions/nuevo-huevo-juego.js');
+const {evaluateSuccess, EVALUATION_RESULT, incrementSuccess} = require('../utility-functions/nuevo-huevo-juego.js');
 
 // enable the use of environemnt files (.env)
 require('dotenv').config();
@@ -45,6 +45,14 @@ module.exports = {
 							'a modifier to the overall roll, can be positive or negative (your meditation step #)'
 						)
 						.setRequired(true)
+				)
+				.addIntegerOption((option) =>
+					option
+						.setName('auto-successes')
+						.setDescription('the number of auto successes which apply to this check (defaults to 0)')
+						.setMinValue(1)
+						.setMaxValue(10)
+						.setRequired(false)
 				)
 				.addStringOption((option) =>
 					option.setName('comment').setDescription('Add a comment to your roll.').setRequired(false)
@@ -104,9 +112,12 @@ module.exports = {
 
 			let numberOfBatchRolls = interaction.options.getInteger('repetitions');
 			let modifier = interaction.options.getInteger('modifier');
+			let autoSuccesses = interaction.options.getInteger('auto-successes') ?? 0;
 			let comment = interaction.options.getString('comment');
 
-			log(`received parameters: {repetitions: ${numberOfBatchRolls}, modifier: ${modifier}}`);
+			log(
+				`received parameters: {repetitions: ${numberOfBatchRolls}, modifier: ${modifier}}, autoSuccesses: ${autoSuccesses}`
+			);
 
 			let randomConfig = {
 				min: 1,
@@ -137,14 +148,18 @@ module.exports = {
 
 					let sum = diceResult + modifier;
 					let evaluationResult = evaluateSuccess(sum);
-					// adjust for crit failures 
-					if (diceResult === 1 || (diceResult >= 2 && diceResult <=10) ) {
+					// adjust for auto success if value is positive
+					if (autoSuccesses > 0) {
+						evaluationResult = incrementSuccess(evaluationResult, autoSuccesses);
+					}
+					// adjust for crit failures
+					if (diceResult === 1 || (diceResult >= 2 && diceResult <= 10)) {
 						let negativeSuccesses;
 						if (diceResult === 1) {
 							log(`\t\t${userAlias} rolled a 1. Critical failure. -2 Successes.`);
 							negativeSuccesses = 2;
 						}
-						if (diceResult >= 2 && diceResult <=10) {
+						if (diceResult >= 2 && diceResult <= 10) {
 							log(`\t\t${userAlias} rolled between 2 and 10. A slightly critical failure. -1 Success.`);
 							negativeSuccesses = 1;
 						}

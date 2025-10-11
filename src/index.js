@@ -11,7 +11,7 @@ const {log, cleanupLogDirectory} = require('./logging-util.js');
 // enable the use of environemnt files (.env)
 require('dotenv').config();
 
-const random = new RandomOrg({apiKey: process.env.RANDOM_API_KEY});
+global.random = new RandomOrg({apiKey: process.env.RANDOM_API_KEY});
 const client = new Discord.Client({
 	intents: [
 		Discord.GatewayIntentBits.Guilds,

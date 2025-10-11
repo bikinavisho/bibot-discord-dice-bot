@@ -3,7 +3,7 @@ const {SlashCommandBuilder} = require('discord.js');
 const pbtaCommand = require('../../src/commands/pbta');
 const {MOCK_INTERACTION} = require('../test-utils');
 
-describe('pbta', () => {
+describe('pbta command', () => {
 	test('data is an instance of SlackCommandBuilder class', () => {
 		expect(pbtaCommand.data).toBeInstanceOf(SlashCommandBuilder);
 	});

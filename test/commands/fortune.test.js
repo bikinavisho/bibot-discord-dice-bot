@@ -3,7 +3,11 @@ const {SlashCommandBuilder} = require('discord.js');
 const fortuneCommand = require('../../src/commands/fortune');
 const {MOCK_INTERACTION} = require('../test-utils');
 
-describe('fortune', () => {
+// Use the manual mock in __mocks__/random-org.js and get its helper API
+jest.mock('random-org');
+const RandomOrgMock = require('random-org');
+
+describe('fortune command', () => {
 	test('data is an instance of SlackCommandBuilder class', () => {
 		expect(fortuneCommand.data).toBeInstanceOf(SlashCommandBuilder);
 	});
@@ -14,6 +18,8 @@ describe('fortune', () => {
 	});
 	test('replies with expected value', async () => {
 		let mockInteraction = {...MOCK_INTERACTION};
+
+		RandomOrgMock.__setNextRoll(1); // set roll to 1 to get first fortune
 
 		await fortuneCommand.execute(mockInteraction);
 

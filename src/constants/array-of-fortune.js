@@ -423,7 +423,8 @@ module.exports = [
 	// real life fortune cookies
 	// ==================================================================================================
 	'Your smile is a curve that can get a lot of things straight.',
-	'Good writing is clear thinking made visible.'
+	'Good writing is clear thinking made visible.',
+	'You will soon be surrounded by good friends and laughter.'
 
 	// ==================================================================================================
 	// suggestions from friends

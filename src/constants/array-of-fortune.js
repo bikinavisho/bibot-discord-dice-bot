@@ -424,7 +424,27 @@ module.exports = [
 	// ==================================================================================================
 	'Your smile is a curve that can get a lot of things straight.',
 	'Good writing is clear thinking made visible.',
-	'You will soon be surrounded by good friends and laughter.'
+	'You will soon be surrounded by good friends and laughter.',
+	'Positive changes will lead to a lifetime of happiness.',
+	'A distant relative will reach out to you soon.',
+	'Your willing heart will help you achieve the impossible.',
+	'You will soon meet someone who wants to start a project with you.',
+	'You will soon receive an unexpected gift.',
+	'Your ambitious nature will lead to many rewards.',
+	'Do not mistake temptation for opportunity.',
+	'Everything has beauty, but not everyone sees it.',
+	'A new routine will ignite unexpected success at work.',
+	'New financial resources will soon become available to you.',
+	'You do not have to know where you are going to be headed in the right direction.',
+	"Your emotions are right on the surface, but that's okay.",
+	'Your ability to juggle many tasks will take you far.',
+	'Your dream life is rich—listen to your dreams.',
+	'Cut through organanizational impediments and get some real work done.',
+	'Creative energy is up. Capitalize on it.',
+	'Remember to share good fortune with friends.',
+	'Make time for a relaxing vacation.',
+	'Your grace will benefit someone else.',
+	"The world is ready to receive your talents—don't hold back."
 
 	// ==================================================================================================
 	// suggestions from friends

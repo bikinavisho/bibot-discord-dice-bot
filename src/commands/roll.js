@@ -3,12 +3,15 @@ const Discord = require('discord.js');
 const {
 	executeNormalDiceRoll,
 	executeRankedSkillCheck,
-	executeNuevoHuevoJuegoDiceRoll
+	executeNuevoHuevoJuegoDiceRoll,
+	executeFacetSkillCheck
 } = require('../utility-functions/roll.js');
 
 const COMMAND_NAME_DICE = 'dice';
 const COMMAND_NAME_RANKED = 'ranked';
 const COMMAND_NAME_NUEVO_HUEVO_JUEGO = 'nhj';
+const COMMAND_NAME_FACET = 'facet';
+const COMMAND_NAME_FACET_SHORTENED = 'ft';
 
 module.exports = {
 	data: new Discord.SlashCommandBuilder()
@@ -105,7 +108,9 @@ module.exports = {
 				.addStringOption((option) =>
 					option.setName('comment').setDescription('Add a comment to your roll.').setRequired(false)
 				)
-		),
+		)
+		.addSubcommand(facetSubCommand(COMMAND_NAME_FACET))
+		.addSubcommand(facetSubCommand(COMMAND_NAME_FACET_SHORTENED)),
 	async execute(interaction) {
 		if (interaction.options.getSubcommand() === COMMAND_NAME_RANKED) {
 			await executeRankedSkillCheck(interaction);
@@ -116,5 +121,35 @@ module.exports = {
 		if (interaction.options.getSubcommand() === COMMAND_NAME_DICE) {
 			await executeNormalDiceRoll(interaction);
 		}
+		if (
+			interaction.options.getSubcommand() === COMMAND_NAME_FACET ||
+			interaction.options.getSubcommand() === COMMAND_NAME_FACET_SHORTENED
+		) {
+			await executeFacetSkillCheck(interaction);
+		}
 	}
 };
+
+function facetSubCommand(alias) {
+	return (subcommand) =>
+		subcommand
+			.setName(alias)
+			.setDescription('A d100 skill check where the player uses their modifier and stars to determine successes.')
+			.addIntegerOption((option) =>
+				option
+					.setName('modifier')
+					.setDescription('a modifier to the overall roll, can be positive or negative')
+					.setRequired(true)
+			)
+			.addIntegerOption((option) =>
+				option
+					.setName('stars')
+					.setDescription('the number of stars being applied to the roll')
+					.setMinValue(1)
+					.setMaxValue(10)
+					.setRequired(false)
+			)
+			.addStringOption((option) =>
+				option.setName('comment').setDescription('Add a comment to your roll.').setRequired(false)
+			);
+}

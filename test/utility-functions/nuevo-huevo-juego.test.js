@@ -68,100 +68,102 @@ describe('nuevo huevo juego utility functions', () => {
 	});
 	describe('evaluateSuccess', () => {
 		test('evaluates -1 as TOTAL_FAILURE', () => {
-			expect(nuevoHuevoJuego.evaluateSuccess(-1)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.TOTAL_FAILURE);
+			expect(nuevoHuevoJuego.evaluateNHJSuccess(-1)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.TOTAL_FAILURE);
 		});
 		test('evaluates 0 as GREAT_FAILURE', () => {
-			expect(nuevoHuevoJuego.evaluateSuccess(0)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.GREAT_FAILURE);
+			expect(nuevoHuevoJuego.evaluateNHJSuccess(0)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.GREAT_FAILURE);
 		});
 		test('evaluates 9 as GREAT_FAILURE', () => {
-			expect(nuevoHuevoJuego.evaluateSuccess(9)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.GREAT_FAILURE);
+			expect(nuevoHuevoJuego.evaluateNHJSuccess(9)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.GREAT_FAILURE);
 		});
 		test('evaluates 10 as FAILURE', () => {
-			expect(nuevoHuevoJuego.evaluateSuccess(10)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.FAILURE);
+			expect(nuevoHuevoJuego.evaluateNHJSuccess(10)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.FAILURE);
 		});
 		test('evaluates 29 as FAILURE', () => {
-			expect(nuevoHuevoJuego.evaluateSuccess(29)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.FAILURE);
+			expect(nuevoHuevoJuego.evaluateNHJSuccess(29)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.FAILURE);
 		});
 		test('evaluates 30 as PARTIAL_FAILURE', () => {
-			expect(nuevoHuevoJuego.evaluateSuccess(30)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.PARTIAL_FAILURE);
+			expect(nuevoHuevoJuego.evaluateNHJSuccess(30)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.PARTIAL_FAILURE);
 		});
 		test('evaluates 49 as PARTIAL_FAILURE', () => {
-			expect(nuevoHuevoJuego.evaluateSuccess(49)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.PARTIAL_FAILURE);
+			expect(nuevoHuevoJuego.evaluateNHJSuccess(49)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.PARTIAL_FAILURE);
 		});
 		test('evaluates 50 as PARTIAL_SUCCESS', () => {
-			expect(nuevoHuevoJuego.evaluateSuccess(50)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.PARTIAL_SUCCESS);
+			expect(nuevoHuevoJuego.evaluateNHJSuccess(50)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.PARTIAL_SUCCESS);
 		});
 		test('evaluates 79 as PARTIAL_SUCCESS', () => {
-			expect(nuevoHuevoJuego.evaluateSuccess(79)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.PARTIAL_SUCCESS);
+			expect(nuevoHuevoJuego.evaluateNHJSuccess(79)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.PARTIAL_SUCCESS);
 		});
 		test('evaluates 80 as SUCCESS', () => {
-			expect(nuevoHuevoJuego.evaluateSuccess(80)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.SUCCESS);
+			expect(nuevoHuevoJuego.evaluateNHJSuccess(80)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.SUCCESS);
 		});
 		test('evaluates 89 as SUCCESS', () => {
-			expect(nuevoHuevoJuego.evaluateSuccess(89)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.SUCCESS);
+			expect(nuevoHuevoJuego.evaluateNHJSuccess(89)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.SUCCESS);
 		});
 		test('evaluates 90 as DOUBLE_SUCCESS', () => {
-			expect(nuevoHuevoJuego.evaluateSuccess(90)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.DOUBLE_SUCCESS);
+			expect(nuevoHuevoJuego.evaluateNHJSuccess(90)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.DOUBLE_SUCCESS);
 		});
 		test('evaluates 99 as DOUBLE_SUCCESS', () => {
-			expect(nuevoHuevoJuego.evaluateSuccess(99)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.DOUBLE_SUCCESS);
+			expect(nuevoHuevoJuego.evaluateNHJSuccess(99)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.DOUBLE_SUCCESS);
 		});
 		test('evaluates 100 as TRIPLE_SUCCESS', () => {
-			expect(nuevoHuevoJuego.evaluateSuccess(100)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.TRIPLE_SUCCESS);
+			expect(nuevoHuevoJuego.evaluateNHJSuccess(100)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.TRIPLE_SUCCESS);
 		});
 		test('evaluates 149 as TRIPLE_SUCCESS', () => {
-			expect(nuevoHuevoJuego.evaluateSuccess(149)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.TRIPLE_SUCCESS);
+			expect(nuevoHuevoJuego.evaluateNHJSuccess(149)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.TRIPLE_SUCCESS);
 		});
 		test('evaluates 150 as QUADRUPLE_SUCCESS', () => {
-			expect(nuevoHuevoJuego.evaluateSuccess(150)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.QUADRUPLE_SUCCESS);
+			expect(nuevoHuevoJuego.evaluateNHJSuccess(150)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.QUADRUPLE_SUCCESS);
 		});
 		test('evaluates 199 as QUADRUPLE_SUCCESS', () => {
-			expect(nuevoHuevoJuego.evaluateSuccess(199)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.QUADRUPLE_SUCCESS);
+			expect(nuevoHuevoJuego.evaluateNHJSuccess(199)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.QUADRUPLE_SUCCESS);
 		});
 		test('evaluates 200 as GREATER_SUCCESS', () => {
-			expect(nuevoHuevoJuego.evaluateSuccess(200)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.GREATER_SUCCESS);
+			expect(nuevoHuevoJuego.evaluateNHJSuccess(200)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.GREATER_SUCCESS);
 		});
 		test('evaluates 250 as GREATER_SUCCESS', () => {
-			expect(nuevoHuevoJuego.evaluateSuccess(250)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.GREATER_SUCCESS);
+			expect(nuevoHuevoJuego.evaluateNHJSuccess(250)).toBe(nuevoHuevoJuego.EVALUATION_RESULT.GREATER_SUCCESS);
 		});
 	});
 	describe('determineReaction', () => {
 		test('determines reaction for TOTAL_FAILURE', () => {
-			expect(nuevoHuevoJuego.determineReaction(nuevoHuevoJuego.EVALUATION_RESULT.TOTAL_FAILURE)).toBe(
+			expect(nuevoHuevoJuego.determineNHJReaction(nuevoHuevoJuego.EVALUATION_RESULT.TOTAL_FAILURE)).toBe(
 				'<:rip:752693741440991323>'
 			);
 		});
 		test('determines reaction for GREAT_FAILURE', () => {
-			expect(nuevoHuevoJuego.determineReaction(nuevoHuevoJuego.EVALUATION_RESULT.GREAT_FAILURE)).toBe('😢');
+			expect(nuevoHuevoJuego.determineNHJReaction(nuevoHuevoJuego.EVALUATION_RESULT.GREAT_FAILURE)).toBe('😢');
 		});
 		test('determines reaction for FAILURE', () => {
-			expect(nuevoHuevoJuego.determineReaction(nuevoHuevoJuego.EVALUATION_RESULT.FAILURE)).toBe('😢');
+			expect(nuevoHuevoJuego.determineNHJReaction(nuevoHuevoJuego.EVALUATION_RESULT.FAILURE)).toBe('😢');
 		});
 		test('determines reaction for PARTIAL_FAILURE', () => {
-			expect(nuevoHuevoJuego.determineReaction(nuevoHuevoJuego.EVALUATION_RESULT.PARTIAL_FAILURE)).toBe('🫤');
+			expect(nuevoHuevoJuego.determineNHJReaction(nuevoHuevoJuego.EVALUATION_RESULT.PARTIAL_FAILURE)).toBe('🫤');
 		});
 		test('determines reaction for PARTIAL_SUCCESS', () => {
-			expect(nuevoHuevoJuego.determineReaction(nuevoHuevoJuego.EVALUATION_RESULT.PARTIAL_SUCCESS)).toBe('🫤');
+			expect(nuevoHuevoJuego.determineNHJReaction(nuevoHuevoJuego.EVALUATION_RESULT.PARTIAL_SUCCESS)).toBe('🫤');
 		});
 		test('determines reaction for SUCCESS', () => {
-			expect(nuevoHuevoJuego.determineReaction(nuevoHuevoJuego.EVALUATION_RESULT.SUCCESS)).toBe('🎉');
+			expect(nuevoHuevoJuego.determineNHJReaction(nuevoHuevoJuego.EVALUATION_RESULT.SUCCESS)).toBe('🎉');
 		});
 		test('determines reaction for DOUBLE_SUCCESS', () => {
-			expect(nuevoHuevoJuego.determineReaction(nuevoHuevoJuego.EVALUATION_RESULT.DOUBLE_SUCCESS)).toBe('🎉');
+			expect(nuevoHuevoJuego.determineNHJReaction(nuevoHuevoJuego.EVALUATION_RESULT.DOUBLE_SUCCESS)).toBe('🎉');
 		});
 		test('determines reaction for TRIPLE_SUCCESS', () => {
-			expect(nuevoHuevoJuego.determineReaction(nuevoHuevoJuego.EVALUATION_RESULT.TRIPLE_SUCCESS)).toBe('🎉');
+			expect(nuevoHuevoJuego.determineNHJReaction(nuevoHuevoJuego.EVALUATION_RESULT.TRIPLE_SUCCESS)).toBe('🎉');
 		});
 		test('determines reaction for QUADRUPLE_SUCCESS', () => {
-			expect(nuevoHuevoJuego.determineReaction(nuevoHuevoJuego.EVALUATION_RESULT.QUADRUPLE_SUCCESS)).toBe('🎉');
+			expect(nuevoHuevoJuego.determineNHJReaction(nuevoHuevoJuego.EVALUATION_RESULT.QUADRUPLE_SUCCESS)).toBe(
+				'🎉'
+			);
 		});
 		test('determines reaction for GREATER_SUCCESS', () => {
-			expect(nuevoHuevoJuego.determineReaction(nuevoHuevoJuego.EVALUATION_RESULT.GREATER_SUCCESS)).toBe(
+			expect(nuevoHuevoJuego.determineNHJReaction(nuevoHuevoJuego.EVALUATION_RESULT.GREATER_SUCCESS)).toBe(
 				'<a:praisethesun:681222773481537838>'
 			);
 		});
 		test('determines reaction for unknown evaluation result as undefined', () => {
-			expect(nuevoHuevoJuego.determineReaction('UNKNOWN_EVALUATION_RESULT')).toBeUndefined();
+			expect(nuevoHuevoJuego.determineNHJReaction('UNKNOWN_EVALUATION_RESULT')).toBeUndefined();
 		});
 	});
 	describe('printNuevoHuegoJuegoMessage', () => {

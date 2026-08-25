@@ -19,7 +19,7 @@ const EVALUATION_RESULT = {
  * @param {EVALUATION_RESULT} evaluation - The evaluation result to determine the reaction for.
  * @returns {string} The corresponding emoji or Discord emoji string.
  */
-function determineReaction(evaluation) {
+function determineNHJReaction(evaluation) {
 	switch (evaluation) {
 		case EVALUATION_RESULT.TOTAL_FAILURE:
 			return '<:rip:752693741440991323>';
@@ -45,7 +45,7 @@ function determineReaction(evaluation) {
  * @param {number} sumNum - The sum to evaluate for success or failure.
  * @returns {string} One of the EVALUATION_RESULT values representing the evaluation outcome.
  */
-function evaluateSuccess(sumNum) {
+function evaluateNHJSuccess(sumNum) {
 	if (sumNum < 0) {
 		log(`\t${sumNum} was less than 0, resulting in a Total Failure`);
 		return EVALUATION_RESULT.TOTAL_FAILURE;
@@ -136,9 +136,9 @@ function printNuevoHuegoJuegoMessage(evaluation) {
 }
 
 module.exports = {
-	determineReaction,
+	determineNHJReaction,
 	EVALUATION_RESULT,
-	evaluateSuccess,
+	evaluateNHJSuccess,
 	incrementSuccess,
 	printNuevoHuegoJuegoMessage
 };

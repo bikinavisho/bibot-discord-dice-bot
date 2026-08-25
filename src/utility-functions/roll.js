@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const RandomOrg = require('random-org');
-
+const pluralize = require('pluralize');
 const {log} = require('../logging-util.js');
 const {
 	getCriteria,
@@ -11,17 +11,24 @@ const {
 	SKILL_CHECK_RESULTS
 } = require('./trinity-functions.js');
 const {
-	determineReaction,
-	evaluateSuccess,
+	determineNHJReaction,
+	evaluateNHJSuccess,
 	printNuevoHuegoJuegoMessage,
-	EVALUATION_RESULT
+	NHJ_EVALUATION_RESULT
 } = require('./nuevo-huevo-juego.js');
+const {determineFacetReaction, evaluateFacetSuccess, printFacetMessage} = require('./facet-functions.js');
 
 // enable the use of environemnt files (.env)
 require('dotenv').config();
 
 const random = new RandomOrg({apiKey: process.env.RANDOM_API_KEY});
 
+/**
+ * Builds a pool of dramatic success messages for critical triumphs.
+ *
+ * @param {string} userAlias - The display name to personalize the success text.
+ * @returns {string[]} An array of celebratory success strings.
+ */
 function generateSuperSuccessMessageArray(userAlias) {
 	return [
 		'The Divine Roll!',
@@ -52,6 +59,13 @@ function generateSuperSuccessMessageArray(userAlias) {
 
 const PRAISE_THE_SUN_EMOJI = '<a:praisethesun:681222773481537838>';
 
+/**
+ * Rolls a standard N-sided dice pool and replies with the rolled values and total.
+ *
+ * @async
+ * @param {import('discord.js').CommandInteraction|any} interaction - The Discord interaction containing dice roll options.
+ * @returns {Promise<void>} Resolves after sending the result reply.
+ */
 async function executeNormalDiceRoll(interaction) {
 	const userAlias =
 		interaction.member && interaction.member.nickname ? interaction.member.nickname : interaction.user.username;
@@ -91,6 +105,13 @@ async function executeNormalDiceRoll(interaction) {
 	});
 }
 
+/**
+ * Resolves a Nuevos Huevo Juego roll, including critical success/failure adjustments.
+ *
+ * @async
+ * @param {import('discord.js').CommandInteraction|any} interaction - The Discord interaction with roll parameters.
+ * @returns {Promise<void>} Resolves after posting the evaluated result and reactions.
+ */
 async function executeNuevoHuevoJuegoDiceRoll(interaction) {
 	log('nuevo huevo juego dice roll BEGIN!');
 
@@ -119,7 +140,7 @@ async function executeNuevoHuevoJuegoDiceRoll(interaction) {
 		messageContent += `${userAlias} rolled: \`1d100\` = \`(${diceResult}) + ${modifier} = ${sum}\`\n`;
 		messageContent += '\tthus resulting in ';
 
-		let evaluationResult = evaluateSuccess(sum);
+		let evaluationResult = evaluateNHJSuccess(sum);
 		// adjust for crit failures
 		if (diceResult === 1 || (diceResult >= 2 && diceResult <= 10)) {
 			let negativeSuccesses;
@@ -132,12 +153,12 @@ async function executeNuevoHuevoJuegoDiceRoll(interaction) {
 				negativeSuccesses = 1;
 			}
 			log(`previous evaluation: ${evaluationResult}`);
-			let currentEvaluationIndex = Object.keys(EVALUATION_RESULT).indexOf(evaluationResult);
+			let currentEvaluationIndex = Object.keys(NHJ_EVALUATION_RESULT).indexOf(evaluationResult);
 			let newEvaluationIndex = Math.max(currentEvaluationIndex - negativeSuccesses, 0);
-			evaluationResult = EVALUATION_RESULT[Object.keys(EVALUATION_RESULT)[newEvaluationIndex]];
+			evaluationResult = NHJ_EVALUATION_RESULT[Object.keys(NHJ_EVALUATION_RESULT)[newEvaluationIndex]];
 			log(`new evaluation: ${evaluationResult}`);
 		}
-		botReaction = determineReaction(evaluationResult);
+		botReaction = determineNHJReaction(evaluationResult);
 		// will add something that flows in the sentence, such as "a Total Failure" or "a Greater Success";
 		messageContent += printNuevoHuegoJuegoMessage(evaluationResult);
 		messageContent += '.';
@@ -189,6 +210,13 @@ async function executeNuevoHuevoJuegoDiceRoll(interaction) {
 	});
 }
 
+/**
+ * Executes a ranked skill check using Trinity-style criteria, success counting, and critical handling.
+ *
+ * @async
+ * @param {import('discord.js').CommandInteraction|any} interaction - The Discord interaction containing the skill check inputs.
+ * @returns {Promise<void>} Resolves after the final result is sent to the channel.
+ */
 async function executeRankedSkillCheck(interaction) {
 	const userAlias =
 		interaction.member && interaction.member.nickname ? interaction.member.nickname : interaction.user.username;
@@ -346,8 +374,102 @@ async function executeRankedSkillCheck(interaction) {
 	});
 }
 
+/**
+ * Resolves a facet-based skill check, adjusting stars for critical success and failure outcomes.
+ *
+ * @async
+ * @param {import('discord.js').CommandInteraction|any} interaction - The Discord interaction with facet roll parameters.
+ * @returns {Promise<void>} Resolves after the final result reply is created.
+ */
+async function executeFacetSkillCheck(interaction) {
+	log('facet skill check BEGIN!');
+
+	const userAlias =
+		interaction.member && interaction.member.nickname ? interaction.member.nickname : interaction.user.username;
+
+	let modifier = interaction.options.getInteger('modifier');
+	let stars = interaction.options.getInteger('stars');
+
+	log(`received parameters: {modifier: ${modifier}, stars: ${stars}}`);
+
+	// roll 1d100 (minimum 1, maximum 100)
+	let randomConfig = {
+		min: 1,
+		max: 100,
+		n: 1
+	};
+	await random.generateIntegers(randomConfig).then(async (result) => {
+		let returnedNumbers = result.random.data;
+
+		let diceResult = returnedNumbers.at(0);
+		log(`rolled 1d100, resulting in: ${diceResult}`);
+		let sum = diceResult + modifier;
+		let messageContent = '';
+		let adjustedStars = stars;
+
+		let botReaction; // used for reacting to the message at the end
+
+		messageContent += `${userAlias} rolled: \`1d100\` = \`(${diceResult}) + ${modifier} = ${sum}\`\n`;
+		messageContent += '\tthus resulting in ';
+
+		let totalSuccesses = evaluateFacetSuccess(sum, diceResult);
+		// adjust stars for crit failures
+		if (diceResult === 1) {
+			log(`${userAlias} rolled a 1. Critical failure. -1 star.`);
+			adjustedStars = Math.max(adjustedStars - 1, 0);
+		}
+		// adjust stars for crit successes
+		if (diceResult === 100) {
+			log(`${userAlias} rolled a 100. Critical success. +1 star.`);
+			adjustedStars += 1;
+		}
+		botReaction = determineFacetReaction(totalSuccesses);
+		// will add something that flows in the sentence, such as "a Total Failure" or "a Greater Success";
+		messageContent += printFacetMessage(totalSuccesses);
+		messageContent += `, with ${adjustedStars} ${pluralize('star', adjustedStars)}`;
+		if (adjustedStars > 0) {
+			messageContent += '(' + '⭐'.repeat(adjustedStars) + ')';
+		}
+		messageContent += '.';
+
+		if (diceResult === 100) {
+			log('super crit success');
+			let successMessages = generateSuperSuccessMessageArray(userAlias);
+			// Randomly select one of the above success messages
+			let chosenIndex = _.random(0, successMessages.length - 1);
+			let successMessage = successMessages[chosenIndex];
+
+			// send a message with specialized phrasing for super critical success
+			successMessage += `\n\t*${userAlias} rolled a \`100\`, and gained +1 Success and +1 Star for the roll (reflected above).*`;
+			await interaction.channel.send(successMessage).then((msg) => {
+				msg.react(PRAISE_THE_SUN_EMOJI);
+			});
+		}
+		// crit fail logic
+		if (diceResult <= 10) {
+			log('crit failure');
+			messageContent += '\n\n⚠️You got a Critical Failure.';
+			// override bot reaction
+			botReaction = '😨';
+		}
+
+		let comment = interaction.options.getString('comment');
+		if (comment) {
+			log(`adding comment: "${comment}"`);
+			messageContent += `\n\nFor: \`${comment}\``;
+		}
+
+		await interaction.reply({content: messageContent, fetchReply: true}).then((msg) => {
+			log('reacting to reply...');
+			msg.react(botReaction);
+			log('reaction sent.');
+		});
+	});
+}
+
 module.exports = {
 	executeNormalDiceRoll,
 	executeRankedSkillCheck,
-	executeNuevoHuevoJuegoDiceRoll
+	executeNuevoHuevoJuegoDiceRoll,
+	executeFacetSkillCheck
 };

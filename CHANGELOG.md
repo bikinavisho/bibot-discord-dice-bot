@@ -5,6 +5,7 @@ All notable changes to this project are recorded in this file.
 ## 2.4.0 - 2026-08-24
 
 -   feature: add new facet command for new game system (2026-08-24)
+-   fix: adjust wording for facet crits (2026-08-25)
 
 ## 2.3.1 - 2025-10-11
 

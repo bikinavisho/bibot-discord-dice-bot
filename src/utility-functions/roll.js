@@ -428,7 +428,7 @@ async function executeFacetSkillCheck(interaction) {
 		messageContent += printFacetMessage(totalSuccesses);
 		messageContent += `, with ${adjustedStars} ${pluralize('star', adjustedStars)}`;
 		if (adjustedStars > 0) {
-			messageContent += '(' + '⭐'.repeat(adjustedStars) + ')';
+			messageContent += ' (' + '⭐'.repeat(adjustedStars) + ')';
 		}
 		messageContent += '.';
 
@@ -448,7 +448,7 @@ async function executeFacetSkillCheck(interaction) {
 		// crit fail logic
 		if (diceResult <= 10) {
 			log('crit failure');
-			messageContent += '\n\n⚠️You got a Critical Failure.';
+			messageContent += `\n\n⚠️You got a Critical Failure, and lost 1 Success${diceResult === 1 ? ' and lost one ⭐️' : ''} (accounted for above).`;
 			// override bot reaction
 			botReaction = '😨';
 		}

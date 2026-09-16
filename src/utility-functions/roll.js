@@ -388,7 +388,7 @@ async function executeFacetSkillCheck(interaction) {
 		interaction.member && interaction.member.nickname ? interaction.member.nickname : interaction.user.username;
 
 	let modifier = interaction.options.getInteger('modifier');
-	let stars = interaction.options.getInteger('stars');
+	let stars = interaction.options.getInteger('stars') ?? 0;
 
 	log(`received parameters: {modifier: ${modifier}, stars: ${stars}}`);
 

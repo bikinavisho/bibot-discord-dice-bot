@@ -11,7 +11,7 @@ const {
 	skillCheck,
 	SKILL_CHECK_RESULTS
 } = require('../utility-functions/trinity-functions.js');
-const {evaluateSuccess, EVALUATION_RESULT, incrementSuccess} = require('../utility-functions/nuevo-huevo-juego.js');
+const {evaluateNHJSuccess, EVALUATION_RESULT, incrementSuccess} = require('../utility-functions/nuevo-huevo-juego.js');
 
 // enable the use of environemnt files (.env)
 require('dotenv').config();
@@ -147,7 +147,7 @@ module.exports = {
 					}
 
 					let sum = diceResult + modifier;
-					let evaluationResult = evaluateSuccess(sum);
+					let evaluationResult = evaluateNHJSuccess(sum);
 					// adjust for auto success if value is positive
 					if (autoSuccesses > 0) {
 						evaluationResult = incrementSuccess(evaluationResult, autoSuccesses);
